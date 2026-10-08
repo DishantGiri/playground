@@ -1,0 +1,275 @@
+// Prisma Schema for Bored? Entertainment Platform (MySQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id             String            @id @default(cuid()) @db.VarChar(191)
+  name           String?           @db.VarChar(191)
+  email          String            @unique @db.VarChar(191)
+  password       String?           @db.VarChar(255)
+  image          String?           @db.VarChar(500)
+  role           String            @default("USER") @db.VarChar(50) // USER, ADMIN
+  points         Int               @default(0)
+  level          Int               @default(1)
+  streak         Int               @default(0)
+  lastActiveDate String?           @db.VarChar(50) // YYYY-MM-DD
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  userActivities UserActivity[]
+  gameResults    GameResult[]
+  quizResults    QuizResult[]
+  achievements   UserAchievement[]
+  userChallenges UserChallenge[]
+  ratings        Rating[]
+  bookmarks      Bookmark[]
+
+  @@index([points])
+  @@index([level])
+}
+
+model Account {
+  id                String  @id @default(cuid()) @db.VarChar(191)
+  userId            String  @db.VarChar(191)
+  type              String  @db.VarChar(191)
+  provider          String  @db.VarChar(191)
+  providerAccountId String  @db.VarChar(191)
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String? @db.VarChar(191)
+  scope             String? @db.VarChar(255)
+  id_token          String? @db.Text
+  session_state     String? @db.VarChar(255)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @db.VarChar(191)
+  sessionToken String   @unique @db.VarChar(191)
+  userId       String   @db.VarChar(191)
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String   @db.VarChar(191)
+  token      String   @unique @db.VarChar(191)
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Activity {
+  id            String   @id @default(cuid()) @db.VarChar(191)
+  title         String   @db.VarChar(191)
+  slug          String   @unique @db.VarChar(191)
+  description   String   @db.Text
+  category      String   @db.VarChar(50) // GAME, QUIZ, FUN, CREATIVE, RANDOM, CHALLENGE
+  type          String   @db.VarChar(50) // MINI_GAME, TRIVIA, PERSONALITY_TEST, WOULD_YOU_RATHER, GUESSING_GAME, REACTION_TEST, MEMORY_GAME, TYPING_TEST, RANDOM_GENERATOR, FACT, POLL, PIXEL_ART, SOUNDBOARD, JOKE_GEN
+  thumbnail     String   @db.VarChar(255)
+  difficulty    String   @default("EASY") @db.VarChar(20) // EASY, MEDIUM, HARD
+  estimatedTime String   @default("2 min") @db.VarChar(50)
+  points        Int      @default(20)
+  playCount     Int      @default(0)
+  rating        Float    @default(5.0)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gameResults    GameResult[]
+  userActivities UserActivity[]
+  ratings        Rating[]
+  bookmarks      Bookmark[]
+
+  @@index([category])
+  @@index([type])
+  @@index([playCount])
+  @@index([rating])
+}
+
+model Quiz {
+  id          String   @id @default(cuid()) @db.VarChar(191)
+  title       String   @db.VarChar(191)
+  slug        String   @unique @db.VarChar(191)
+  description String   @db.Text
+  category    String   @default("QUIZ") @db.VarChar(50)
+  difficulty  String   @default("EASY") @db.VarChar(20)
+  timeLimit   Int      @default(60)
+  thumbnail   String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions   Question[]
+  quizResults QuizResult[]
+
+  @@index([category])
+}
+
+model Question {
+  id            String  @id @default(cuid()) @db.VarChar(191)
+  quizId        String  @db.VarChar(191)
+  question      String  @db.Text
+  optionsJson   String  @db.Text
+  correctAnswer Int
+  points        Int     @default(10)
+  explanation   String? @db.Text
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([quizId])
+}
+
+model GameResult {
+  id         String   @id @default(cuid()) @db.VarChar(191)
+  userId     String?  @db.VarChar(191)
+  activityId String   @db.VarChar(191)
+  score      Int
+  wpm        Float?
+  accuracy   Float?
+  moves      Int?
+  timeMs     Int?
+  createdAt  DateTime @default(now())
+
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([activityId])
+  @@index([score])
+}
+
+model QuizResult {
+  id             String   @id @default(cuid()) @db.VarChar(191)
+  userId         String?  @db.VarChar(191)
+  quizId         String   @db.VarChar(191)
+  score          Int
+  totalQuestions Int
+  accuracy       Float
+  pointsEarned   Int
+  createdAt      DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  quiz Quiz  @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([quizId])
+}
+
+model UserActivity {
+  id           String   @id @default(cuid()) @db.VarChar(191)
+  userId       String   @db.VarChar(191)
+  activityId   String   @db.VarChar(191)
+  completed    Boolean  @default(false)
+  playCount    Int      @default(1)
+  rating       Int?
+  lastPlayedAt DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
+  @@index([userId])
+  @@index([activityId])
+}
+
+model Achievement {
+  id          String   @id @default(cuid()) @db.VarChar(191)
+  key         String   @unique @db.VarChar(191)
+  title       String   @db.VarChar(191)
+  description String   @db.Text
+  icon        String   @db.VarChar(50)
+  category    String   @default("GENERAL") @db.VarChar(50)
+  xpReward    Int      @default(50)
+  createdAt   DateTime @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid()) @db.VarChar(191)
+  userId        String   @db.VarChar(191)
+  achievementId String   @db.VarChar(191)
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+}
+
+model DailyChallenge {
+  id          String   @id @default(cuid()) @db.VarChar(191)
+  title       String   @db.VarChar(191)
+  description String   @db.Text
+  dateStr     String   @db.VarChar(50) // YYYY-MM-DD
+  targetType  String   @db.VarChar(50) // ACTIVITIES_PLAYED, XP_EARNED, QUIZ_SCORE
+  targetCount Int      @default(3)
+  xpReward    Int      @default(150)
+  createdAt   DateTime @default(now())
+
+  userChallenges UserChallenge[]
+
+  @@index([dateStr])
+}
+
+model UserChallenge {
+  id          String    @id @default(cuid()) @db.VarChar(191)
+  userId      String    @db.VarChar(191)
+  challengeId String    @db.VarChar(191)
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge DailyChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId])
+  @@index([challengeId])
+}
+
+model Rating {
+  id         String   @id @default(cuid()) @db.VarChar(191)
+  userId     String   @db.VarChar(191)
+  activityId String   @db.VarChar(191)
+  stars      Int
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([activityId])
+}
+
+model Bookmark {
+  id         String   @id @default(cuid()) @db.VarChar(191)
+  userId     String   @db.VarChar(191)
+  activityId String   @db.VarChar(191)
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
+  @@index([userId])
+  @@index([activityId])
+}
