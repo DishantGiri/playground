@@ -47,14 +47,13 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 shadow-xl p-8 space-y-6">
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-sm">
-              <Dices className="w-5 h-5" />
-            </div>
-            <span className="text-2xl font-black text-slate-900">
-              BORED<span className="text-violet-600">?</span>
-            </span>
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-flex items-center justify-center group" aria-label="Bored">
+            <img
+              src="/logo.png"
+              alt="Bored"
+              className="h-12 w-auto object-contain group-hover:scale-105 transition-transform mx-auto"
+            />
           </Link>
           <h2 className="text-2xl font-black text-slate-900">Welcome Back</h2>
           <p className="text-xs text-slate-500">

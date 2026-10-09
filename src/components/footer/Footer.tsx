@@ -11,13 +11,12 @@ export function Footer() {
           
           {/* Brand Info */}
           <div className="col-span-2 md:col-span-1 space-y-3">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-xl bg-[#F97316] flex items-center justify-center text-white shadow-2xs group-hover:scale-105 transition-transform">
-                <Gamepad2 className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-black tracking-tight text-[#202124]">
-                BORED<span className="text-[#F97316]">.</span>
-              </span>
+            <Link href="/" className="inline-block group" aria-label="Bored - Play & Relax">
+              <img
+                src="/logo.png"
+                alt="Bored - Play & Relax"
+                className="h-11 sm:h-12 w-auto object-contain group-hover:scale-105 transition-transform"
+              />
             </Link>
             <p className="text-xs text-[#6B7280] leading-relaxed">
               Quick games, clever puzzles, and tiny breaks that make your day better. Built for instant casual entertainment.

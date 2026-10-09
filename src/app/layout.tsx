@@ -8,6 +8,10 @@ export const metadata: Metadata = {
   title: "Bored? | Give us 5 minutes. We'll give you something fun to do.",
   description:
     "The modern entertainment platform designed to cure boredom instantly. Play reaction games, memory puzzles, personality tests, funny generators, and quizzes.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
