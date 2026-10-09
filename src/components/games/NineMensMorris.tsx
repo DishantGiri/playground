@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Wifi,
+  Zap,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
 import { MultiplayerLobby } from "@/components/multiplayer/MultiplayerLobby";
@@ -114,6 +115,7 @@ const MILLS: number[][] = [
 
 export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
   const [mode, setMode] = useState<GameMode>("ai");
+  const [onlineInitialMode, setOnlineInitialMode] = useState<"friends" | "random">("friends");
   const [board, setBoard] = useState<(Player | null)[]>(() => Array(24).fill(null));
 
   // Pieces left to place in Phase 1
@@ -523,53 +525,68 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
             Online Nine Men&apos;s Morris Duel
           </span>
         </div>
-        <MultiplayerLobby defaultGameType="nine-mens-morris" />
+        <MultiplayerLobby defaultGameType="nine-mens-morris" initialMode={onlineInitialMode} />
       </div>
     );
   }
 
   return (
     <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-4 select-none">
-      {/* Top Header Bar */}
-      <div className="w-full bg-white border border-[#E8E8E5] rounded-2xl p-3 shadow-xs flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-1.5">
+      {/* Top Header Bar with 3 Unified Modes */}
+      <div className="w-full bg-white border border-[#E8E8E5] rounded-2xl p-2.5 sm:p-3 shadow-xs flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => {
               setMode("ai");
               resetGame();
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               mode === "ai"
                 ? "bg-[#6366F1] text-white shadow-xs"
                 : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
             }`}
           >
             <Bot className="w-3.5 h-3.5" />
-            <span>vs AI</span>
+            <span>Play with AI</span>
           </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setOnlineInitialMode("friends");
+              setMode("online");
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#FFF7ED] text-[#F97316] hover:bg-[#FFEDD5] border border-[#FFEDD5] cursor-pointer"
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Play with Friends</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setOnlineInitialMode("random");
+              setMode("online");
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#F0FDF4] text-[#16A34A] hover:bg-[#DCFCE7] border border-[#DCFCE7] cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Play with Random Live</span>
+          </button>
+
           <button
             onClick={() => {
               setMode("pvp");
               resetGame();
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer ${
               mode === "pvp"
-                ? "bg-[#6366F1] text-white shadow-xs"
-                : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
+                ? "bg-[#202124] text-white shadow-xs"
+                : "text-[#9CA3AF] hover:text-[#4B5563]"
             }`}
+            title="Pass & play on same device"
           >
-            <Users className="w-3.5 h-3.5" />
-            <span>2 Player</span>
-          </button>
-          <button
-            onClick={() => {
-              sound.playClick();
-              setMode("online");
-            }}
-            className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#EEF2FF] text-[#6366F1] hover:bg-[#E0E7FF] border border-[#C7D2FE] cursor-pointer"
-          >
-            <Wifi className="w-3.5 h-3.5" />
-            <span>2 Devices (Live)</span>
+            <span>1-Device</span>
           </button>
         </div>
 

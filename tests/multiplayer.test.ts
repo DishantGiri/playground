@@ -6,6 +6,7 @@ import {
   getRoom,
   handleRoomAction,
   listOpenRooms,
+  matchmakeRoom,
   MORRIS_MILLS,
   checkMorrisMillFormed,
 } from "../src/lib/multiplayerStore";
@@ -135,3 +136,59 @@ test("Multiplayer: Nine Men's Morris mill formation and piece capture", () => {
   assert.equal(res.room?.nineMensMorris?.millToClaim, false);
   assert.equal(res.room?.nineMensMorris?.currentTurn, 2, "Turn passes to P2");
 });
+
+test("Multiplayer: Scoped random matchmaking pairs players strictly for the selected game", () => {
+  // Player 1 queues for Memory Duel
+  const memQueue = matchmakeRoom("memory-duel", "MemoryMaster");
+  assert.equal(memQueue.matched, false);
+  assert.equal(memQueue.playerNumber, 1);
+  assert.equal(memQueue.room.gameType, "memory-duel");
+
+  // Player 2 queues for Reaction Duel -> should NOT match with Memory Duel room!
+  const reflexQueue = matchmakeRoom("reaction-duel", "SpeedDemon");
+  assert.equal(reflexQueue.matched, false);
+  assert.equal(reflexQueue.playerNumber, 1);
+  assert.equal(reflexQueue.room.gameType, "reaction-duel");
+  assert.notEqual(memQueue.room.code, reflexQueue.room.code);
+
+  // Player 3 queues for Memory Duel -> MUST match with Player 1's Memory Duel room!
+  const memChallenger = matchmakeRoom("memory-duel", "MemoryChallenger");
+  assert.equal(memChallenger.matched, true);
+  assert.equal(memChallenger.playerNumber, 2);
+  assert.equal(memChallenger.room.code, memQueue.room.code);
+  assert.equal(memChallenger.room.status, "playing");
+  assert.equal(memChallenger.room.players.length, 2);
+});
+
+test("Multiplayer: Temporary in-game chat messages are ephemeral and stay in session memory", () => {
+  const { room, playerToken: hostToken } = createRoom(
+    "tic-tac-toe",
+    "SenderP1",
+    "CHAT01",
+    { isPublic: true }
+  );
+
+  const guestRes = joinRoom("CHAT01", "ReceiverP2");
+  const guestToken = guestRes.playerToken!;
+
+  // P1 sends a chat message
+  let res = handleRoomAction("CHAT01", hostToken, "send_chat", { text: "Good luck! 🔥" });
+  assert.equal(res.success, true);
+  assert.equal(res.room?.messages.length, 1);
+  assert.equal(res.room?.messages[0].text, "Good luck! 🔥");
+  assert.equal(res.room?.messages[0].sender, 1);
+  assert.equal(res.room?.messages[0].senderName, "SenderP1");
+
+  // P2 replies
+  res = handleRoomAction("CHAT01", guestToken, "send_chat", { text: "You too! 👏" });
+  assert.equal(res.success, true);
+  assert.equal(res.room?.messages.length, 2);
+  assert.equal(res.room?.messages[1].text, "You too! 👏");
+  assert.equal(res.room?.messages[1].sender, 2);
+
+  // Clearing chat works
+  res = handleRoomAction("CHAT01", hostToken, "clear_chat");
+  assert.equal(res.success, true);
+  assert.equal(res.room?.messages.length, 0);
+});
+

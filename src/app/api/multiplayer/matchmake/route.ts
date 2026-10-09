@@ -16,10 +16,10 @@ export async function POST(req: Request) {
       playerToken: result.playerToken,
       playerNumber: result.playerNumber,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Matchmaking API error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to perform matchmaking" },
+      { success: false, error: error?.message || String(error) },
       { status: 500 }
     );
   }

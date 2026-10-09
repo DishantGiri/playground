@@ -35,6 +35,7 @@ const COLS = 7;
 
 export function ConnectFour({ activitySlug = "connect-4" }: Props) {
   const [mode, setMode] = useState<GameMode>("ai");
+  const [onlineInitialMode, setOnlineInitialMode] = useState<"friends" | "random">("friends");
   const [difficulty, setDifficulty] = useState<AIDifficulty>("medium");
 
   // Game board: 42 cells (6 rows x 7 cols)
@@ -393,7 +394,7 @@ export function ConnectFour({ activitySlug = "connect-4" }: Props) {
           </span>
         </div>
 
-        <MultiplayerLobby defaultGameType="connect-4" />
+        <MultiplayerLobby defaultGameType="connect-4" initialMode={onlineInitialMode} />
       </div>
     );
   }
@@ -435,21 +436,45 @@ export function ConnectFour({ activitySlug = "connect-4" }: Props) {
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] block">
                 Select Game Mode
               </span>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                 <button
                   onClick={() => {
                     sound.playClick();
                     setMode("ai");
                     resetBoard();
                   }}
-                  className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
+                  className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
                     mode === "ai"
-                      ? "bg-[#EEF2FF] text-[#6366F1] border-[#C7D2FE] shadow-2xs"
+                      ? "bg-[#EEF2FF] text-[#6366F1] border-[#C7D2FE] shadow-2xs font-black"
                       : "bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#202124] hover:bg-[#F0F0ED]"
                   }`}
                 >
                   <Bot className="w-3.5 h-3.5 text-[#6366F1]" />
-                  <span>Solo AI</span>
+                  <span>Play with AI</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    sound.playClick();
+                    setOnlineInitialMode("friends");
+                    setMode("cross-device");
+                  }}
+                  className="py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-[#FFF7ED] text-[#F97316] border-[#FFEDD5] hover:bg-[#FFEDD5]"
+                >
+                  <Users className="w-3.5 h-3.5 text-[#F97316]" />
+                  <span>With Friends</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    sound.playClick();
+                    setOnlineInitialMode("random");
+                    setMode("cross-device");
+                  }}
+                  className="py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-[#F0FDF4] text-[#16A34A] border-[#DCFCE7] hover:bg-[#DCFCE7]"
+                >
+                  <Zap className="w-3.5 h-3.5 text-[#16A34A] fill-current" />
+                  <span>Random Live</span>
                 </button>
 
                 <button
@@ -458,25 +483,14 @@ export function ConnectFour({ activitySlug = "connect-4" }: Props) {
                     setMode("local");
                     resetBoard();
                   }}
-                  className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
+                  className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
                     mode === "local"
-                      ? "bg-[#FFF7ED] text-[#F97316] border-[#FFEDD5] shadow-2xs"
-                      : "bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#202124] hover:bg-[#F0F0ED]"
+                      ? "bg-[#202124] text-white border-[#202124] shadow-2xs"
+                      : "bg-white text-[#9CA3AF] border-[#E8E8E5] hover:text-[#202124]"
                   }`}
+                  title="Pass & play on same device"
                 >
-                  <Users className="w-3.5 h-3.5 text-[#F97316]" />
-                  <span>2 Players</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    sound.playClick();
-                    setMode("cross-device");
-                  }}
-                  className="py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#6366F1] hover:bg-[#EEF2FF]"
-                >
-                  <Smartphone className="w-3.5 h-3.5 text-[#6366F1]" />
-                  <span>Live Online</span>
+                  <span>1-Device</span>
                 </button>
               </div>
             </div>

@@ -14,6 +14,7 @@ import {
   Clock,
   Swords,
   User,
+  Users,
   Smartphone,
 } from "lucide-react";
 import { RewardedAdModal } from "@/components/ads/RewardedAdModal";
@@ -26,6 +27,7 @@ type State = "WAITING" | "READY" | "CLICK" | "TOO_EARLY" | "RESULT";
 
 export function ReactionTest({ activitySlug = "reaction-test" }: { activitySlug?: string }) {
   const [mode, setMode] = useState<Mode>("SOLO");
+  const [onlineInitialMode, setOnlineInitialMode] = useState<"friends" | "random">("friends");
 
   // Solo State
   const [gameState, setGameState] = useState<State>("WAITING");
@@ -291,7 +293,7 @@ export function ReactionTest({ activitySlug = "reaction-test" }: { activitySlug?
               Online Reflex Duel
             </span>
           </div>
-          <MultiplayerLobby defaultGameType="reaction-duel" />
+          <MultiplayerLobby defaultGameType="reaction-duel" initialMode={onlineInitialMode} />
         </div>
       ) : (
         /* 2-Card Full-Width Split Layout */
@@ -320,7 +322,7 @@ export function ReactionTest({ activitySlug = "reaction-test" }: { activitySlug?
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] block">
                   Game Mode
                 </span>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                   <button
                     onClick={() => {
                       sound.playClick();
@@ -328,12 +330,36 @@ export function ReactionTest({ activitySlug = "reaction-test" }: { activitySlug?
                     }}
                     className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
                       mode === "SOLO"
-                        ? "bg-[#FFF7ED] text-[#F97316] border-[#FFEDD5] shadow-2xs font-black"
+                        ? "bg-[#EEF2FF] text-[#6366F1] border-[#C7D2FE] shadow-2xs font-black"
                         : "bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#202124] hover:bg-[#F0F0ED]"
                     }`}
                   >
                     <User className="w-3.5 h-3.5" />
-                    <span>Solo</span>
+                    <span>Play Solo</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sound.playClick();
+                      setOnlineInitialMode("friends");
+                      setMode("ONLINE");
+                    }}
+                    className="py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-[#FFF7ED] text-[#F97316] border-[#FFEDD5] hover:bg-[#FFEDD5]"
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>With Friends</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sound.playClick();
+                      setOnlineInitialMode("random");
+                      setMode("ONLINE");
+                    }}
+                    className="py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-[#F0FDF4] text-[#16A34A] border-[#DCFCE7] hover:bg-[#DCFCE7]"
+                  >
+                    <Zap className="w-3.5 h-3.5 fill-current" />
+                    <span>Random Live</span>
                   </button>
 
                   <button
@@ -344,23 +370,13 @@ export function ReactionTest({ activitySlug = "reaction-test" }: { activitySlug?
                     }}
                     className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
                       mode === "DUEL"
-                        ? "bg-[#EEF2FF] text-[#6366F1] border-[#C7D2FE] shadow-2xs font-black"
-                        : "bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#202124] hover:bg-[#F0F0ED]"
+                        ? "bg-[#202124] text-white border-[#202124] shadow-2xs font-black"
+                        : "bg-white text-[#9CA3AF] border-[#E8E8E5] hover:text-[#202124] hover:bg-[#F0F0ED]"
                     }`}
+                    title="2 players share 1 screen"
                   >
                     <Swords className="w-3.5 h-3.5" />
-                    <span>1-Device Duel</span>
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sound.playClick();
-                      setMode("ONLINE");
-                    }}
-                    className="py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border bg-white text-[#6B7280] border-[#E8E8E5] hover:text-[#6366F1] hover:bg-[#EEF2FF]"
-                  >
-                    <Smartphone className="w-3.5 h-3.5" />
-                    <span>2 Devices</span>
+                    <span>1-Device</span>
                   </button>
                 </div>
               </div>
