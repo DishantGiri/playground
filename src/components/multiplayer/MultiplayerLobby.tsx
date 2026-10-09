@@ -456,13 +456,14 @@ export function MultiplayerLobby({
     const opponentName = playerNumber === 1 ? p2?.name || "Opponent" : p1?.name || "Opponent";
 
     return (
-      <div className="w-full max-w-2xl mx-auto space-y-4">
+      <div className="w-full max-w-6xl mx-auto space-y-4">
         {errorMessage && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold text-center animate-in fade-in">
             {errorMessage}
           </div>
         )}
 
+        {/* 1. TOP: Level / Mode / Room Controls */}
         <MultiplayerHeader
           room={activeRoom}
           playerNumber={playerNumber}
@@ -471,77 +472,85 @@ export function MultiplayerLobby({
           onRematch={() => handleGameAction("rematch")}
         />
 
-        {activeRoom.gameType === "dots-and-boxes" && (
-          <OnlineDotsAndBoxes
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+        {/* 2. MAIN ARENA: Game on Left, In-Game Ephemeral Chat on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <div className="lg:col-span-8 space-y-4">
+            {activeRoom.gameType === "dots-and-boxes" && (
+              <OnlineDotsAndBoxes
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "nine-mens-morris" && (
-          <OnlineNineMensMorris
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "nine-mens-morris" && (
+              <OnlineNineMensMorris
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "connect-4" && (
-          <OnlineConnectFour
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "connect-4" && (
+              <OnlineConnectFour
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "memory-duel" && (
-          <OnlineMemoryDuel
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "memory-duel" && (
+              <OnlineMemoryDuel
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "tic-tac-toe" && (
-          <OnlineTicTacToe
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "tic-tac-toe" && (
+              <OnlineTicTacToe
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "reaction-duel" && (
-          <OnlineReactionDuel
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "reaction-duel" && (
+              <OnlineReactionDuel
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
 
-        {activeRoom.gameType === "number-guess" && (
-          <OnlineNumberGuess
-            room={activeRoom}
-            playerNumber={playerNumber}
-            onAction={handleGameAction}
-            isSubmitting={isSubmittingAction}
-          />
-        )}
+            {activeRoom.gameType === "number-guess" && (
+              <OnlineNumberGuess
+                room={activeRoom}
+                playerNumber={playerNumber}
+                onAction={handleGameAction}
+                isSubmitting={isSubmittingAction}
+              />
+            )}
+          </div>
 
-        {/* Temporary In-Game Chat (In-Memory Ephemeral) */}
-        <TemporaryGameChat
-          messages={activeRoom.messages}
-          playerNumber={playerNumber}
-          playerName={myName}
-          opponentName={opponentName}
-          onSendMessage={(text) => handleGameAction("send_chat", { text })}
-        />
+          {/* Right Panel: Docked Live Ephemeral Chat */}
+          <div className="lg:col-span-4 sticky top-4">
+            <TemporaryGameChat
+              messages={activeRoom.messages}
+              playerNumber={playerNumber}
+              playerName={myName}
+              opponentName={opponentName}
+              onSendMessage={(text) => handleGameAction("send_chat", { text })}
+              defaultOpen={true}
+            />
+          </div>
+        </div>
       </div>
     );
   }

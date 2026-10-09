@@ -416,71 +416,89 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
     <div className="w-full max-w-6xl mx-auto space-y-4 select-none text-[#202124]">
       {/* 1. TOP HEADER BAR: "leavel and other" */}
       <div className="w-full bg-white border border-[#E8E8E5] rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xs space-y-3">
-        {/* Row 1: Mode Selectors & Quick Controls */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              onClick={() => {
-                setMode("ai");
-                resetGame();
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                mode === "ai"
-                  ? "bg-[#6366F1] text-white shadow-xs"
-                  : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
-              }`}
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span>Play with AI</span>
-            </button>
+        {/* Row 1: Mode Selectors */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button
+            onClick={() => {
+              setMode("ai");
+              resetGame();
+            }}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              mode === "ai"
+                ? "bg-[#6366F1] text-white shadow-xs"
+                : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>Play with AI</span>
+          </button>
 
-            <button
-              onClick={() => {
-                sound.playClick();
-                setOnlineInitialMode("friends");
-                setMode("online");
-              }}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#FFF7ED] text-[#F97316] hover:bg-[#FFEDD5] border border-[#FFEDD5] cursor-pointer"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Play with Friends</span>
-            </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setOnlineInitialMode("friends");
+              setMode("online");
+            }}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#FFF7ED] text-[#F97316] hover:bg-[#FFEDD5] border border-[#FFEDD5] cursor-pointer"
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Play with Friends</span>
+          </button>
 
-            <button
-              onClick={() => {
-                sound.playClick();
-                setOnlineInitialMode("random");
-                setMode("online");
-              }}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#F0FDF4] text-[#16A34A] hover:bg-[#DCFCE7] border border-[#DCFCE7] cursor-pointer"
-            >
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Play with Random Live</span>
-            </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setOnlineInitialMode("random");
+              setMode("online");
+            }}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#F0FDF4] text-[#16A34A] hover:bg-[#DCFCE7] border border-[#DCFCE7] cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Play with Random Live</span>
+          </button>
 
-            <button
-              onClick={() => {
-                setMode("pvp");
-                resetGame();
-              }}
-              className={`px-2.5 py-1.5 rounded-xl text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer ${
-                mode === "pvp"
-                  ? "bg-[#202124] text-white shadow-xs"
-                  : "text-[#9CA3AF] hover:text-[#4B5563]"
-              }`}
-              title="Pass & play on same device"
-            >
-              <span>1-Device</span>
-            </button>
+          <button
+            onClick={() => {
+              setMode("pvp");
+              resetGame();
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer ${
+              mode === "pvp"
+                ? "bg-[#202124] text-white shadow-xs"
+                : "text-[#9CA3AF] hover:text-[#4B5563]"
+            }`}
+            title="Pass & play on same device"
+          >
+            <span>1-Device</span>
+          </button>
+        </div>
+
+        {/* Row 2: Grid Sizes on Left, Difficulty / Restart / Help on Right */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* Left: Size Selector Pill */}
+          <div className="flex items-center gap-1 bg-[#F0F0ED] p-1 rounded-xl text-xs font-bold overflow-x-auto scrollbar-none">
+            {([3, 4, 5, 6, 7, 9, 11] as GridSize[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => resetGame(s)}
+                className={`px-2.5 py-1 rounded-lg transition-all shrink-0 cursor-pointer ${
+                  gridSize === s
+                    ? "bg-white text-[#202124] shadow-xs"
+                    : "text-[#6B7280] hover:text-[#202124]"
+                }`}
+              >
+                {s - 1}×{s - 1}
+              </button>
+            ))}
           </div>
 
-          {/* AI Difficulty, Restart & Rules */}
+          {/* Right: AI Difficulty, Restart, Rules */}
           <div className="flex items-center gap-1.5">
             {mode === "ai" && (
               <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value as AIDifficulty)}
-                className="text-xs font-bold bg-[#F0F0ED] border border-[#E8E8E5] rounded-xl px-2.5 py-1.5 text-[#202124] cursor-pointer focus:outline-hidden"
+                className="text-xs font-bold bg-[#F0F0ED] hover:bg-[#E8E8E5] border border-[#E8E8E5] rounded-xl px-3 py-1.5 text-[#202124] cursor-pointer focus:outline-hidden"
               >
                 <option value="easy">Easy AI</option>
                 <option value="medium">Medium AI</option>
@@ -496,37 +514,12 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
             </button>
             <button
               onClick={() => setShowRules(!showRules)}
-              className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] hover:bg-[#E8E8E5] transition-colors cursor-pointer"
               title="How to play"
             >
               <HelpCircle className="w-4 h-4" />
             </button>
           </div>
-        </div>
-
-        {/* Row 2: Grid Size Selector */}
-        <div className="flex items-center justify-between gap-2 flex-wrap border-t border-[#F0F0ED] pt-2.5">
-          <div className="flex items-center gap-2 overflow-x-auto">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] shrink-0">
-              Grid Size:
-            </span>
-            <div className="flex items-center gap-1 bg-[#F0F0ED] p-1 rounded-xl text-xs font-bold overflow-x-auto scrollbar-none">
-              {([3, 4, 5, 6, 7, 9, 11] as GridSize[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => resetGame(s)}
-                  className={`px-2 py-1 rounded-lg transition-all shrink-0 cursor-pointer ${
-                    gridSize === s ? "bg-white text-[#202124] shadow-xs" : "text-[#6B7280] hover:text-[#202124]"
-                  }`}
-                >
-                  {s - 1}×{s - 1}
-                </button>
-              ))}
-            </div>
-          </div>
-          <span className="text-[11px] font-semibold text-[#6B7280]">
-            {totalBoxes} total squares
-          </span>
         </div>
       </div>
 

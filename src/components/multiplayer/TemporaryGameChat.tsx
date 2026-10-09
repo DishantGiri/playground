@@ -22,6 +22,7 @@ interface Props {
   playerName: string;
   opponentName: string;
   onSendMessage: (text: string) => void;
+  defaultOpen?: boolean;
 }
 
 const PRESET_TAUNTS = [
@@ -43,8 +44,9 @@ export function TemporaryGameChat({
   playerName,
   opponentName,
   onSendMessage,
+  defaultOpen = true,
 }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [inputText, setInputText] = useState("");
   const [latestToast, setLatestToast] = useState<QuickMessage | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
