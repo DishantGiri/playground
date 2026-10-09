@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { Keyboard, RotateCcw, ArrowRight, Gift, Trophy, Zap, RefreshCw, Sparkles } from "lucide-react";
 import { RewardedAdModal } from "@/components/ads/RewardedAdModal";
@@ -73,8 +73,16 @@ export function TypingTest({ activitySlug = "typing-test" }: { activitySlug?: st
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
+    let val = e.target.value;
     if (isFinished) return;
+
+    // Disallow leading space if starting
+    if (!startTime && val.trim().length === 0) return;
+
+    // Disallow consecutive double spaces
+    if (val.includes("  ")) {
+      val = val.replace(/\s{2,}/g, " ");
+    }
 
     sound.playClick();
 
@@ -84,38 +92,64 @@ export function TypingTest({ activitySlug = "typing-test" }: { activitySlug?: st
 
     setUserInput(val);
 
-    // Calculate mistakes
+    const targetWordsList = targetText.split(" ");
+    const userWordsList = val.split(" ");
+    const activeWordIdx = Math.max(0, userWordsList.length - 1);
+
+    // Calculate mistakes on completed words + active word
     let errorCount = 0;
-    for (let i = 0; i < val.length; i++) {
-      if (val[i] !== targetText[i]) {
-        errorCount++;
+    let totalTypedChars = 0;
+
+    userWordsList.forEach((uWord, wIdx) => {
+      const tWord = targetWordsList[wIdx] || "";
+      const isPastWord = wIdx < activeWordIdx;
+
+      const evalLen = Math.max(uWord.length, isPastWord ? tWord.length : uWord.length);
+      for (let i = 0; i < evalLen; i++) {
+        totalTypedChars++;
+        if (i < uWord.length && i < tWord.length) {
+          if (uWord[i] !== tWord[i]) errorCount++;
+        } else {
+          // Extra char or missed char on past word
+          errorCount++;
+        }
       }
-    }
+    });
+
     setErrors(errorCount);
 
     const calculatedAcc =
-      val.length > 0 ? Math.max(0, Math.round(((val.length - errorCount) / val.length) * 100)) : 100;
+      totalTypedChars > 0
+        ? Math.max(0, Math.min(100, Math.round(((totalTypedChars - errorCount) / totalTypedChars) * 100)))
+        : 100;
     setAccuracy(calculatedAcc);
 
     // Calculate real-time WPM
     if (startTime) {
       const minutes = (Date.now() - startTime) / 60000;
-      const words = val.length / 5;
+      const correctChars = Math.max(0, totalTypedChars - errorCount);
+      const wordsCount = correctChars / 5;
       if (minutes > 0.02) {
-        setWpm(Math.round(words / minutes));
+        setWpm(Math.round(wordsCount / minutes));
       }
     }
 
-    // Check completion
-    if (val.length >= targetText.length) {
+    // Check completion: finished when typed through the last target word
+    const isAtLastWord = activeWordIdx === targetWordsList.length - 1;
+    const isPastAllWords = activeWordIdx >= targetWordsList.length;
+    const finishedLastWord =
+      isAtLastWord && userWordsList[activeWordIdx].length >= (targetWordsList[targetWordsList.length - 1]?.length || 0);
+
+    if (isPastAllWords || finishedLastWord) {
       finishTest(val, errorCount, calculatedAcc);
     }
   };
 
   const finishTest = async (finalInput: string, finalErrors: number, finalAcc: number) => {
     setIsFinished(true);
-    const durationMin = startTime ? (Date.now() - startTime) / 60000 : 0.1;
-    const finalWpm = Math.max(10, Math.round(finalInput.length / 5 / durationMin));
+    const durationMin = startTime ? Math.max(0.05, (Date.now() - startTime) / 60000) : 0.1;
+    const correctChars = Math.max(0, finalInput.length - finalErrors);
+    const finalWpm = Math.max(10, Math.round(correctChars / 5 / durationMin));
     setWpm(finalWpm);
 
     sound.playSuccess();
@@ -142,6 +176,10 @@ export function TypingTest({ activitySlug = "typing-test" }: { activitySlug?: st
       console.error(err);
     }
   };
+
+  const targetWords = useMemo(() => (targetText ? targetText.split(" ") : []), [targetText]);
+  const userWords = useMemo(() => (userInput ? userInput.split(" ") : []), [userInput]);
+  const currentWordIdx = Math.max(0, userWords.length - 1);
 
   return (
     <div className="w-full min-w-0 rounded-2xl sm:rounded-3xl border border-[#E8E8E5] bg-[#F7F7F5] p-3 sm:p-4 lg:p-5 shadow-2xs select-none text-[#202124]">
@@ -252,18 +290,62 @@ export function TypingTest({ activitySlug = "typing-test" }: { activitySlug?: st
         <div className="rounded-2xl border border-[#E8E8E5] bg-white p-4 sm:p-6 shadow-xs flex flex-col justify-center min-h-[440px] order-1 lg:order-2 space-y-5">
           
           {/* Target Sentence Box */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-[#F0F0ED] border border-[#E8E8E5] text-lg sm:text-xl font-mono leading-relaxed select-none min-h-[140px] flex items-center flex-wrap">
-            <div>
-              {targetText.split("").map((char, index) => {
-                let color = "text-[#9CA3AF]";
-                if (index < userInput.length) {
-                  color = userInput[index] === char ? "text-[#16A34A] font-bold" : "text-[#DC2626] bg-[#FEF2F2] rounded px-0.5";
-                } else if (index === userInput.length) {
-                  color = "text-[#202124] underline decoration-[#F97316] decoration-2 font-bold";
-                }
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#F0F0ED] border border-[#E8E8E5] text-lg sm:text-xl font-mono leading-relaxed select-none min-h-[140px] flex items-center">
+            <div className="flex flex-wrap gap-x-2.5 gap-y-2 items-baseline w-full">
+              {targetWords.map((targetWord, wIdx) => {
+                const userWord = userWords[wIdx];
+                const isCurrentWord = wIdx === currentWordIdx && !isFinished;
+                const isPastWord = wIdx < currentWordIdx;
+
                 return (
-                  <span key={index} className={color}>
-                    {char}
+                  <span
+                    key={wIdx}
+                    className={`inline-flex items-baseline relative rounded-md transition-colors ${
+                      isCurrentWord ? "bg-white px-1.5 py-0.5 -mx-1 -my-0.5 rounded-lg border border-[#E8E8E5] shadow-2xs" : ""
+                    }`}
+                  >
+                    {targetWord.split("").map((targetChar, cIdx) => {
+                      let charClass = "text-[#9CA3AF]";
+
+                      if (isPastWord || (isFinished && wIdx === currentWordIdx)) {
+                        if (!userWord || cIdx >= userWord.length) {
+                          charClass = "text-[#DC2626] underline decoration-[#DC2626] font-bold";
+                        } else if (userWord[cIdx] === targetChar) {
+                          charClass = "text-[#16A34A] font-bold";
+                        } else {
+                          charClass = "text-[#DC2626] bg-[#FEE2E2] rounded px-0.5 font-bold";
+                        }
+                      } else if (isCurrentWord) {
+                        if (userWord && cIdx < userWord.length) {
+                          charClass =
+                            userWord[cIdx] === targetChar
+                              ? "text-[#16A34A] font-bold"
+                              : "text-[#DC2626] bg-[#FEE2E2] rounded px-0.5 font-bold";
+                        } else if (userWord && cIdx === userWord.length) {
+                          charClass = "text-[#202124] font-bold underline decoration-[#F97316] decoration-2";
+                        } else {
+                          charClass = "text-[#9CA3AF]";
+                        }
+                      }
+
+                      return (
+                        <span key={cIdx} className={charClass}>
+                          {targetChar}
+                        </span>
+                      );
+                    })}
+
+                    {/* Extra characters typed on word */}
+                    {userWord && userWord.length > targetWord.length && (
+                      <span className="text-[#DC2626] bg-[#FEE2E2] line-through font-bold px-0.5 rounded">
+                        {userWord.slice(targetWord.length)}
+                      </span>
+                    )}
+
+                    {/* Blinking cursor caret */}
+                    {isCurrentWord && userWord && userWord.length <= targetWord.length && (
+                      <span className="inline-block w-0.5 h-5 bg-[#F97316] animate-pulse align-middle ml-0.5" />
+                    )}
                   </span>
                 );
               })}
