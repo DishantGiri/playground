@@ -20,6 +20,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { getActivityIcon } from "@/lib/icons";
+import { getActivityImage } from "@/lib/activityImages";
+import { ActivityCard } from "@/components/activities/ActivityCard";
 import { formatNumber } from "@/lib/utils";
 
 interface Activity {
@@ -241,71 +243,16 @@ export function HomeGameExplorer({ activities }: Props) {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 w-full">
           {filteredActivities.map((act) => {
-            const isQuiz = act.category === "QUIZ" || act.type === "TRIVIA";
-            const targetUrl = isQuiz ? `/quiz/${act.slug}` : `/play/${act.slug}`;
             const isFav = favorites.includes(act.slug);
-
             return (
-              <Link
+              <ActivityCard
                 key={act.id}
-                href={targetUrl}
-                className="group relative rounded-2xl p-4 transition-all duration-200 flex flex-col justify-between bg-white border border-[#E8E8E5] shadow-2xs hover:border-[#D1D5DB] hover:shadow-xs hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]"
-              >
-                {/* Top Badge & Favorite Button */}
-                <div>
-                  <div className="flex items-center justify-between gap-1.5 mb-2.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#F97316] bg-[#FFF7ED] border border-[#FFEDD5] px-2 py-0.5 rounded-lg">
-                      {act.category}
-                    </span>
-
-                    <button
-                      onClick={(e) => toggleFavorite(act.slug, e)}
-                      className="p-1 rounded-lg text-[#6B7280] hover:text-[#DC2626] transition-colors"
-                      title={isFav ? "Remove from favorites" : "Add to favorites"}
-                      aria-label="Toggle favorite"
-                    >
-                      <Heart className={`w-3.5 h-3.5 ${isFav ? "fill-[#DC2626] text-[#DC2626]" : "text-[#9CA3AF]"}`} />
-                    </button>
-                  </div>
-
-                  {/* Icon & Title */}
-                  <div className="flex items-start gap-3 my-1.5">
-                    <div className="w-11 h-11 rounded-xl bg-[#F0F0ED] border border-[#E8E8E5] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#FFF7ED] transition-transform">
-                      {getActivityIcon(act.slug, "w-6 h-6 text-[#202124]")}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-sm font-bold text-[#202124] group-hover:text-[#F97316] transition-colors line-clamp-1">
-                        {act.title}
-                      </h3>
-                      <p className="text-xs text-[#6B7280] mt-0.5 line-clamp-2 leading-relaxed">
-                        {act.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Meta & Action */}
-                <div className="pt-3 mt-2.5 border-t border-[#E8E8E5] flex items-center justify-between text-xs text-[#6B7280]">
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#6B7280]" />
-                      <span>{act.estimatedTime}</span>
-                    </span>
-                    <span className="text-[#D1D5DB]">•</span>
-                    <span className="flex items-center gap-0.5 font-bold text-[#202124]">
-                      <Star className="w-3 h-3 fill-[#F97316] text-[#F97316]" />
-                      <span>{act.rating.toFixed(1)}</span>
-                    </span>
-                  </div>
-
-                  <span className="flex items-center gap-1 text-xs font-bold text-[#F97316] group-hover:translate-x-0.5 transition-transform">
-                    <span>{isQuiz ? "Quiz" : "Play"}</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </Link>
+                activity={act}
+                isFavorite={isFav}
+                onFavoriteToggle={(slug, e) => toggleFavorite(slug, e)}
+              />
             );
           })}
         </div>

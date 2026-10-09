@@ -31,6 +31,8 @@ import {
   Grid,
 } from "lucide-react";
 import { getActivityIcon } from "@/lib/icons";
+import { getActivityImage } from "@/lib/activityImages";
+import { ActivityCard } from "@/components/activities/ActivityCard";
 import { formatNumber } from "@/lib/utils";
 import { sound } from "@/lib/audio";
 
@@ -637,61 +639,16 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
           </div>
 
           {/* Grid of All Games */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredActivities.map((act) => {
-              const isQuiz = act.category === "QUIZ" || act.type === "TRIVIA";
-              const targetUrl = isQuiz ? `/quiz/${act.slug}` : `/play/${act.slug}`;
               const isFav = favorites.includes(act.slug);
-
               return (
-                <Link
+                <ActivityCard
                   key={act.id}
-                  href={targetUrl}
-                  onClick={() => sound.playClick()}
-                  className="rounded-2xl border border-[#E8E8E5] bg-[#F7F7F5] hover:bg-white p-3.5 flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:border-[#F97316] hover:shadow-2xs group"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="w-9 h-9 rounded-xl bg-white border border-[#E8E8E5] flex items-center justify-center shrink-0">
-                        {getActivityIcon(act.slug, "w-4 h-4")}
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white border border-[#E8E8E5] text-[#6B7280]">
-                          {act.category}
-                        </span>
-                        <button
-                          onClick={(e) => toggleFavorite(act.slug, e)}
-                          className="p-1 rounded-md text-[#9CA3AF] hover:text-[#DC2626] transition-colors cursor-pointer"
-                          title="Save favorite"
-                        >
-                          <Heart className={`w-3.5 h-3.5 ${isFav ? "fill-[#DC2626] text-[#DC2626]" : ""}`} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-sm font-black text-[#202124] group-hover:text-[#F97316] transition-colors">
-                        {act.title}
-                      </h4>
-                      <p className="text-xs text-[#6B7280] line-clamp-2 mt-0.5 leading-relaxed">
-                        {act.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 mt-2 border-t border-[#E8E8E5] flex items-center justify-between text-[11px] text-[#6B7280] font-semibold">
-                    <span className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-[#F97316] fill-[#F97316]" />
-                      <span className="text-[#202124] font-bold">{act.rating.toFixed(1)}</span>
-                    </span>
-
-                    <span className="font-bold text-[#F97316] group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-                      <span>Play</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </Link>
+                  activity={act}
+                  isFavorite={isFav}
+                  onFavoriteToggle={(slug, e) => toggleFavorite(slug, e)}
+                />
               );
             })}
           </div>
