@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import confetti from "canvas-confetti";
 import {
   RotateCcw,
@@ -16,6 +16,9 @@ import {
   Award,
   Users,
   Zap,
+  MessageSquare,
+  Send,
+  HelpCircle,
 } from "lucide-react";
 import { RewardedAdModal } from "@/components/ads/RewardedAdModal";
 import { sound } from "@/lib/audio";
@@ -37,6 +40,7 @@ interface Card {
 export function MemoryGame({ activitySlug = "memory-game" }: { activitySlug?: string }) {
   const [mode, setMode] = useState<GameMode>("SOLO");
   const [onlineInitialMode, setOnlineInitialMode] = useState<"friends" | "random">("friends");
+  const [showRules, setShowRules] = useState(false);
 
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
@@ -51,6 +55,71 @@ export function MemoryGame({ activitySlug = "memory-game" }: { activitySlug?: st
   const [activePlayer, setActivePlayer] = useState<1 | 2>(1);
   const [p1Pairs, setP1Pairs] = useState(0);
   const [p2Pairs, setP2Pairs] = useState(0);
+
+  // In-game temporary chat state
+  const [chatMessages, setChatMessages] = useState<
+    { id: string; sender: "p1" | "p2" | "ai" | "system"; senderName: string; text: string; timestamp: number }[]
+  >([
+    {
+      id: "mem_init_1",
+      sender: "system",
+      senderName: "Arena System",
+      text: "Card Memory Duel initialized! Find all 12 matching pairs across the 4×6 grid.",
+      timestamp: Date.now(),
+    },
+    {
+      id: "mem_init_2",
+      sender: "ai",
+      senderName: "Memory Bot",
+      text: "Concentrate on the card positions! Can you beat my record under 20 moves? 🧠🃏",
+      timestamp: Date.now() + 100,
+    },
+  ]);
+  const [chatInputText, setChatInputText] = useState("");
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  const addChatMessage = useCallback(
+    (text: string, sender: "p1" | "p2" = "p1") => {
+      sound.playClick();
+      const newMsg = {
+        id: "msg_" + Math.random().toString(36).substring(2, 9),
+        sender,
+        senderName: sender === "p1" ? "Player 1" : mode === "SOLO" ? "Memory Bot" : "Player 2",
+        text: text.slice(0, 160),
+        timestamp: Date.now(),
+      };
+      setChatMessages((prev) => [...prev.slice(-30), newMsg]);
+
+      if (mode === "SOLO" && sender === "p1") {
+        setTimeout(() => {
+          const botReplies = [
+            "Good memory! Remember where that duplicate was 🃏",
+            "Pair found! Keep up the momentum 🔥",
+            "Focus! The corners usually hold matching tokens 🧠",
+            "Great round! You're beating my average pace 👏",
+            "Concentration is key in memory duels! ⚡",
+          ];
+          const randomReply = botReplies[Math.floor(Math.random() * botReplies.length)];
+          setChatMessages((prev) => [
+            ...prev.slice(-30),
+            {
+              id: "msg_" + Math.random().toString(36).substring(2, 9),
+              sender: "ai",
+              senderName: "Memory Bot",
+              text: randomReply,
+              timestamp: Date.now(),
+            },
+          ]);
+          sound.playTurnChime();
+        }, 600);
+      }
+    },
+    [mode]
+  );
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
 
   const initGame = useCallback(() => {
     sound.playClick();
