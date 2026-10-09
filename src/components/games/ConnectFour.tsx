@@ -448,7 +448,7 @@ export function ConnectFour({ activitySlug = "connect-4" }: Props) {
   // Cross-device online arena mode
   if (mode === "cross-device") {
     return (
-      <div className="w-full max-w-2xl mx-auto space-y-6">
+      <div className="w-full max-w-6xl mx-auto space-y-4 select-none text-[#202124]">
         {/* Navigation back to local/AI mode */}
         <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-slate-200">
           <button

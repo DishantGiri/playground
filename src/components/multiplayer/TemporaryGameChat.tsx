@@ -118,7 +118,7 @@ export function TemporaryGameChat({
   };
 
   return (
-    <div className="w-full relative mt-3 select-none">
+    <div className="w-full relative select-none">
       {/* Toast Alert Pop-up from Opponent (when chat is closed or open) */}
       {latestToast && (
         <div
@@ -145,15 +145,15 @@ export function TemporaryGameChat({
         </div>
       )}
 
-      {/* Main Chat Container / Accordion Dock */}
-      <div className="rounded-2xl border border-[#E8E8E5] bg-white shadow-xs overflow-hidden transition-all">
+      {/* Main Chat Container */}
+      <div className="rounded-2xl sm:rounded-3xl border border-[#E8E8E5] bg-white shadow-xs overflow-hidden transition-all flex flex-col h-[480px]">
         {/* Header Bar */}
         <div
           onClick={handleToggleOpen}
-          className="p-3 bg-[#F7F7F5] border-b border-[#E8E8E5] flex items-center justify-between cursor-pointer hover:bg-[#F0F0ED] transition-colors"
+          className="p-3 bg-[#F7F7F5] border-b border-[#E8E8E5] flex items-center justify-between cursor-pointer hover:bg-[#F0F0ED] transition-colors shrink-0"
         >
-          <div className="flex items-center gap-2.5">
-            <div className="relative">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="relative shrink-0">
               <MessageSquare className="w-4 h-4 text-[#4F46E5]" />
               {unreadCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white font-black text-[9px] flex items-center justify-center animate-pulse">
@@ -161,35 +161,33 @@ export function TemporaryGameChat({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-[#202124] uppercase tracking-wider">
-                Live Match Chat
-              </span>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                Temporary (In-Memory)
-              </span>
-            </div>
+            <span className="text-xs font-black text-[#202124] uppercase tracking-wider shrink-0 whitespace-nowrap">
+              Live Chat
+            </span>
+            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 uppercase shrink-0 whitespace-nowrap">
+              Temporary
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-bold text-[#6B7280]">
-            <span>{messages.length} messages</span>
-            {isOpen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[#6B7280] shrink-0">
+            <span className="text-[10px] font-mono">{messages.length} msgs</span>
+            {isOpen ? <Minimize2 className="w-3.5 h-3.5 text-[#9CA3AF]" /> : <Maximize2 className="w-3.5 h-3.5 text-[#9CA3AF]" />}
           </div>
         </div>
 
         {/* Expanded Chat Drawer */}
         {isOpen && (
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1 min-h-0">
             {/* Ephemeral Notice */}
-            <div className="px-3.5 py-1.5 bg-[#FFFBEB] border-b border-[#FEF3C7] text-[10px] text-[#92400E] flex items-center gap-1.5 font-medium">
+            <div className="px-3.5 py-1.5 bg-[#FFFBEB] border-b border-[#FEF3C7] text-[10px] text-[#92400E] flex items-center gap-1.5 font-medium shrink-0">
               <Clock className="w-3 h-3 text-[#D97706] shrink-0" />
-              <span>
-                Temporary chat session. Messages vanish automatically when the match ends.
+              <span className="truncate">
+                Messages vanish automatically when the match ends.
               </span>
             </div>
 
             {/* Scrollable Message History (internal scroll only) */}
-            <div ref={chatScrollContainerRef} className="p-3.5 space-y-2.5 max-h-[220px] overflow-y-auto bg-slate-50/50">
+            <div ref={chatScrollContainerRef} className="p-3.5 space-y-2.5 flex-1 min-h-0 overflow-y-auto bg-slate-50/50">
               {messages.length === 0 ? (
                 <div className="py-6 text-center text-xs text-[#9CA3AF] space-y-1">
                   <p className="font-bold">No messages yet.</p>

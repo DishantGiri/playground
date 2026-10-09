@@ -270,7 +270,7 @@ export function MemoryGame({ activitySlug = "memory-game" }: { activitySlug?: st
   // Cross-device 2-device multiplayer mode
   if (mode === "CROSS_DEVICE") {
     return (
-      <div className="w-full max-w-2xl mx-auto space-y-6">
+      <div className="w-full max-w-6xl mx-auto space-y-4 select-none text-[#202124]">
         <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-slate-200">
           <button
             onClick={() => {

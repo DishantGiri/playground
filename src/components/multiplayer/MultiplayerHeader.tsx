@@ -36,48 +36,55 @@ export function MultiplayerHeader({ room, playerNumber, playerToken, onLeave, on
   };
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+    <div className="w-full bg-white border border-[#E8E8E5] rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xs">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Room Info & Code */}
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center text-violet-600">
+        {/* Room Info & Live Status */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-[#EEF2FF] border border-[#C7D2FE] flex items-center justify-center text-[#6366F1] shrink-0">
             <Swords className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Room Code:</span>
-              <span className="text-sm font-black text-slate-900 tracking-wider bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
-                {room.code}
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-black text-[#202124] capitalize">
+                {room.gameType.replace(/-/g, " ")} Duel
+              </h2>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6366F1] bg-[#EEF2FF] px-2 py-0.5 rounded-lg border border-[#C7D2FE]">
+                Online Live
               </span>
-              <button
-                onClick={handleCopyCode}
-                title="Copy Room Code"
-                className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
-              >
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Live 2-Device Session</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#16A34A] mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
+              <span>2-Device Session Synced</span>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        {/* Room Code Pill & Actions */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 bg-[#F0F0ED] px-3 py-1.5 rounded-xl border border-[#E8E8E5] text-xs font-bold">
+            <span className="text-[#6B7280] text-[10px] uppercase">Room Code</span>
+            <span className="font-mono text-sm text-[#202124] tracking-wider">{room.code}</span>
+            <button
+              onClick={handleCopyCode}
+              title="Copy Room Code"
+              className="p-1 text-[#6B7280] hover:text-[#202124] hover:bg-white rounded-md transition-colors cursor-pointer"
+            >
+              {copiedCode ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Copy className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#6B7280] bg-[#F0F0ED] hover:bg-[#E8E8E5] hover:text-[#202124] border border-[#E8E8E5] transition-colors cursor-pointer"
           >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+            {copiedLink ? <Check className="w-3.5 h-3.5 text-[#16A34A]" /> : <Share2 className="w-3.5 h-3.5" />}
             <span>{copiedLink ? "Link Copied!" : "Share Link"}</span>
           </button>
 
           {room.status === "finished" && onRematch && (
             <button
               onClick={onRematch}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-violet-600 hover:bg-violet-700 shadow-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#6366F1] hover:bg-[#4F46E5] shadow-xs transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Rematch</span>
@@ -86,65 +93,11 @@ export function MultiplayerHeader({ room, playerNumber, playerToken, onLeave, on
 
           <button
             onClick={onLeave}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] border border-[#FCA5A5] transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Leave</span>
+            <span>Leave</span>
           </button>
-        </div>
-      </div>
-
-      {/* Players Bar & Match Score */}
-      <div className="grid grid-cols-3 items-center bg-slate-50 rounded-xl p-2.5 border border-slate-200 text-xs">
-        {/* Player 1 */}
-        <div className="flex items-center gap-2">
-          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black ${
-            playerNumber === 1
-              ? "bg-violet-600 text-white shadow-xs"
-              : "bg-slate-200 text-slate-700"
-          }`}>
-            P1
-          </div>
-          <div className="min-w-0">
-            <div className="font-bold text-slate-800 truncate flex items-center gap-1">
-              <span>{p1?.name || "Player 1"}</span>
-              {playerNumber === 1 && (
-                <span className="text-[10px] text-violet-700 font-bold bg-violet-100/70 px-1.5 py-0.2 rounded">
-                  YOU
-                </span>
-              )}
-            </div>
-            <span className="text-[10px] text-slate-400">Host</span>
-          </div>
-        </div>
-
-        {/* Center Score */}
-        <div className="text-center font-black text-slate-800 flex items-center justify-center gap-2">
-          <span className="text-base text-violet-700">{room.scores.p1}</span>
-          <span className="text-slate-300 font-normal">:</span>
-          <span className="text-base text-rose-700">{room.scores.p2}</span>
-        </div>
-
-        {/* Player 2 */}
-        <div className="flex items-center justify-end gap-2 text-right">
-          <div className="min-w-0">
-            <div className="font-bold text-slate-800 truncate flex items-center justify-end gap-1">
-              {playerNumber === 2 && (
-                <span className="text-[10px] text-rose-700 font-bold bg-rose-100/70 px-1.5 py-0.2 rounded">
-                  YOU
-                </span>
-              )}
-              <span>{p2 ? p2.name : "Waiting..."}</span>
-            </div>
-            <span className="text-[10px] text-slate-400">{p2 ? "Challenger" : "Not connected"}</span>
-          </div>
-          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black ${
-            playerNumber === 2
-              ? "bg-rose-600 text-white shadow-xs"
-              : "bg-slate-200 text-slate-700"
-          }`}>
-            P2
-          </div>
         </div>
       </div>
     </div>

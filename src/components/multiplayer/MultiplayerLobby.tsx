@@ -36,6 +36,7 @@ import {
   Search,
   Play,
   Share2,
+  LogOut,
 } from "lucide-react";
 import {
   MultiplayerGameType,
@@ -448,15 +449,52 @@ export function MultiplayerLobby({
   // Filter open rooms for selected game only
   const gameSpecificOpenRooms = openRooms.filter((r) => r.gameType === selectedGame);
 
-  // If in an active room, render live match UI with TemporaryGameChat
+  // If in an active room, render live match UI with 3-column layout
   if (activeRoom) {
     const p1 = activeRoom.players.find((p) => p.playerNumber === 1);
     const p2 = activeRoom.players.find((p) => p.playerNumber === 2);
     const myName = playerNumber === 1 ? p1?.name || "You" : p2?.name || "You";
     const opponentName = playerNumber === 1 ? p2?.name || "Opponent" : p1?.name || "Opponent";
 
+    // Determine current turn and scores depending on gameType
+    let p1Score = activeRoom.scores.p1;
+    let p2Score = activeRoom.scores.p2;
+    let currentTurn: 1 | 2 = 1;
+
+    if (activeRoom.dotsAndBoxes) {
+      p1Score = activeRoom.dotsAndBoxes.p1Score;
+      p2Score = activeRoom.dotsAndBoxes.p2Score;
+      currentTurn = activeRoom.dotsAndBoxes.currentTurn;
+    } else if (activeRoom.connectFour) {
+      currentTurn = activeRoom.connectFour.currentTurn;
+    } else if (activeRoom.nineMensMorris) {
+      currentTurn = activeRoom.nineMensMorris.currentTurn;
+    } else if (activeRoom.memoryDuel) {
+      p1Score = activeRoom.memoryDuel.p1Score;
+      p2Score = activeRoom.memoryDuel.p2Score;
+      currentTurn = activeRoom.memoryDuel.currentTurn;
+    } else if (activeRoom.ticTacToe) {
+      currentTurn = activeRoom.ticTacToe.currentTurn;
+    } else if (activeRoom.numberGuess) {
+      currentTurn = activeRoom.numberGuess.currentTurn;
+    }
+
+    const isMyTurn = activeRoom.status === "playing" && currentTurn === playerNumber;
+
+    let turnStatusText = "Waiting for Opponent...";
+    if (activeRoom.status === "finished") {
+      turnStatusText =
+        activeRoom.winner === "draw"
+          ? "Stalemate Draw!"
+          : activeRoom.winner === playerNumber
+          ? "Victory! You Won!"
+          : `${opponentName} Won!`;
+    } else if (activeRoom.status === "playing") {
+      turnStatusText = isMyTurn ? "Your Turn!" : `${opponentName}'s Turn`;
+    }
+
     return (
-      <div className="w-full max-w-6xl mx-auto space-y-4">
+      <div className="w-full max-w-6xl mx-auto space-y-4 select-none text-[#202124]">
         {errorMessage && (
           <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold text-center animate-in fade-in">
             {errorMessage}
@@ -472,9 +510,11 @@ export function MultiplayerLobby({
           onRematch={() => handleGameAction("rematch")}
         />
 
-        {/* 2. MAIN ARENA: Game on Left, In-Game Ephemeral Chat on Right */}
+        {/* 2. MAIN ARENA: 3-COLUMN WIREFRAME LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          <div className="lg:col-span-8 space-y-4">
+          
+          {/* COLUMN 1: [game] (lg:col-span-6) */}
+          <div className="lg:col-span-6 space-y-4">
             {activeRoom.gameType === "dots-and-boxes" && (
               <OnlineDotsAndBoxes
                 room={activeRoom}
@@ -539,8 +579,108 @@ export function MultiplayerLobby({
             )}
           </div>
 
-          {/* Right Panel: Docked Live Ephemeral Chat */}
-          <div className="lg:col-span-4 sticky top-4">
+          {/* COLUMN 2: [game details] (lg:col-span-3) */}
+          <div className="lg:col-span-3 bg-white border border-[#E8E8E5] rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
+                Match Details
+              </h3>
+              <span className="text-[10px] font-bold text-[#16A34A] bg-[#F0FDF4] px-2 py-0.5 rounded-lg border border-[#DCFCE7] flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
+                LIVE SYNC
+              </span>
+            </div>
+
+            {/* Turn Status Banner */}
+            <div
+              className={`p-3 rounded-2xl text-center text-xs font-black uppercase tracking-wider border ${
+                activeRoom.status === "finished"
+                  ? "bg-purple-50 text-purple-700 border-purple-200"
+                  : isMyTurn
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200 animate-pulse"
+                  : activeRoom.status === "waiting"
+                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                  : "bg-blue-50 text-blue-700 border-blue-200"
+              }`}
+            >
+              {turnStatusText}
+            </div>
+
+            {/* Scorecard: P1 (Host) vs P2 (Challenger) */}
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div
+                className={`p-3 rounded-xl border transition-all ${
+                  activeRoom.status === "playing" && currentTurn === 1
+                    ? "bg-[#EEF2FF] border-[#6366F1] shadow-2xs"
+                    : "bg-[#F7F7F5] border-[#E8E8E5]"
+                }`}
+              >
+                <span className="text-[10px] uppercase font-bold text-[#6366F1] block truncate">
+                  {p1?.name || "Player 1"} {playerNumber === 1 && "(You)"}
+                </span>
+                <span className="text-2xl font-black font-mono text-[#6366F1]">{p1Score}</span>
+                <span className="text-[9px] text-[#6B7280] block">Host (P1)</span>
+              </div>
+
+              <div
+                className={`p-3 rounded-xl border transition-all ${
+                  activeRoom.status === "playing" && currentTurn === 2
+                    ? "bg-[#FFF7ED] border-[#F97316] shadow-2xs"
+                    : "bg-[#F7F7F5] border-[#E8E8E5]"
+                }`}
+              >
+                <span className="text-[10px] uppercase font-bold text-[#F97316] block truncate">
+                  {p2 ? `${p2.name} ${playerNumber === 2 ? "(You)" : ""}` : "Waiting..."}
+                </span>
+                <span className="text-2xl font-black font-mono text-[#F97316]">{p2Score}</span>
+                <span className="text-[9px] text-[#6B7280] block">Challenger (P2)</span>
+              </div>
+            </div>
+
+            {/* Room Info Box */}
+            <div className="p-3 rounded-xl bg-[#F0F0ED] border border-[#E8E8E5] space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase text-[#6B7280]">Room Code</span>
+                <span className="font-mono font-black text-sm text-[#202124] bg-white px-2 py-0.5 rounded border border-[#E8E8E5]">
+                  {activeRoom.code}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-[#6B7280]">
+                <span>Game</span>
+                <span className="font-bold text-[#202124] capitalize">{activeRoom.gameType.replace(/-/g, " ")}</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-[#6B7280]">
+                <span>Connection</span>
+                <span className="font-bold text-[#16A34A] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
+                  {activeRoom.status === "waiting" ? "Listening..." : "Active"}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 border-t border-[#E8E8E5] space-y-2">
+              {activeRoom.status === "finished" && (
+                <button
+                  onClick={() => handleGameAction("rematch")}
+                  className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-[#6366F1] hover:bg-[#4F46E5] text-white shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Start Rematch</span>
+                </button>
+              )}
+              <button
+                onClick={handleLeaveRoom}
+                className="w-full py-2 px-3 rounded-xl text-xs font-bold text-[#DC2626] bg-[#FEF2F2] hover:bg-[#FEE2E2] border border-[#FCA5A5] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Leave Match</span>
+              </button>
+            </div>
+          </div>
+
+          {/* COLUMN 3: [chat] (lg:col-span-3) */}
+          <div className="lg:col-span-3">
             <TemporaryGameChat
               messages={activeRoom.messages}
               playerNumber={playerNumber}
@@ -550,6 +690,7 @@ export function MultiplayerLobby({
               defaultOpen={true}
             />
           </div>
+
         </div>
       </div>
     );

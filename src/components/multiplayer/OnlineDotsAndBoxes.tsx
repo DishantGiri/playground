@@ -69,64 +69,36 @@ export function OnlineDotsAndBoxes({ room, playerNumber, onAction, isSubmitting 
 
   return (
     <div className="p-4 sm:p-6 rounded-3xl bg-white border border-[#E8E8E5] shadow-xs space-y-6">
-      {/* Turn & Score Banner */}
-      <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#F7F7F5] border border-[#E8E8E5]">
-        {/* Player 1 */}
-        <div
-          className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all ${
-            state.currentTurn === 1
-              ? "bg-blue-500 text-white border-blue-600 shadow-xs"
-              : "bg-white text-[#6B7280] border-[#E8E8E5]"
-          }`}
-        >
-          <div className="w-3 h-3 rounded-full bg-blue-400 border border-white" />
-          <div className="text-left">
-            <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">
-              {room.players[0]?.name || "P1"} {playerNumber === 1 && "(You)"}
-            </div>
-            <div className="text-sm font-black">{state.p1Score} pts</div>
-          </div>
-        </div>
-
-        {/* Status Tag */}
-        <div className="text-center">
-          <span
-            className={`text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${
-              isFinished
-                ? "bg-purple-100 text-purple-700 border border-purple-200"
-                : isMyTurn
-                ? "bg-emerald-100 text-emerald-700 border border-emerald-200 animate-pulse"
-                : "bg-amber-100 text-amber-700 border border-amber-200"
-            }`}
-          >
-            {isFinished
-              ? room.winner === "draw"
-                ? "Match Draw!"
-                : room.winner === playerNumber
-                ? "You Won!"
-                : "Opponent Won!"
-              : isMyTurn
-              ? "Your Turn!"
-              : "Opponent's Turn"}
+      {/* Compact Interactive Board Header */}
+      <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#F7F7F5] border border-[#E8E8E5]">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-black text-[#202124]">
+            {gridSize}×{gridSize} Grid Arena
+          </span>
+          <span className="text-[10px] text-[#6B7280]">
+            ({gridSize * gridSize} Dots)
           </span>
         </div>
 
-        {/* Player 2 */}
-        <div
-          className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl border transition-all ${
-            state.currentTurn === 2
-              ? "bg-rose-500 text-white border-rose-600 shadow-xs"
-              : "bg-white text-[#6B7280] border-[#E8E8E5]"
+        <span
+          className={`text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider ${
+            isFinished
+              ? "bg-purple-100 text-purple-700 border border-purple-200"
+              : isMyTurn
+              ? "bg-emerald-100 text-emerald-700 border border-emerald-200 animate-pulse"
+              : "bg-amber-100 text-amber-700 border border-amber-200"
           }`}
         >
-          <div className="w-3 h-3 rounded-full bg-rose-400 border border-white" />
-          <div className="text-left">
-            <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">
-              {room.players[1]?.name || "P2"} {playerNumber === 2 && "(You)"}
-            </div>
-            <div className="text-sm font-black">{state.p2Score} pts</div>
-          </div>
-        </div>
+          {isFinished
+            ? room.winner === "draw"
+              ? "Match Draw!"
+              : room.winner === playerNumber
+              ? "You Won!"
+              : "Opponent Won!"
+            : isMyTurn
+            ? "Your Turn — Click a Line"
+            : "Opponent's Turn"}
+        </span>
       </div>
 
       {/* Dots and Boxes Interactive Board */}
