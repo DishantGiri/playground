@@ -130,7 +130,9 @@ export function NumberGuess({ activitySlug = "number-guess" }: { activitySlug?: 
   );
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatEndRef.current?.parentElement) {
+      chatEndRef.current.parentElement.scrollTop = chatEndRef.current.parentElement.scrollHeight;
+    }
   }, [chatMessages]);
 
 

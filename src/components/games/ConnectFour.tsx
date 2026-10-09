@@ -118,9 +118,11 @@ export function ConnectFour({ activitySlug = "connect-4" }: Props) {
     [mode]
   );
 
-  // Scroll chat to bottom on new message
+  // Scroll chat container to bottom on new message (internal scroll only, never window)
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatEndRef.current?.parentElement) {
+      chatEndRef.current.parentElement.scrollTop = chatEndRef.current.parentElement.scrollHeight;
+    }
   }, [chatMessages]);
 
   // Reset board

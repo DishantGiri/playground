@@ -118,7 +118,9 @@ export function MemoryGame({ activitySlug = "memory-game" }: { activitySlug?: st
   );
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatEndRef.current?.parentElement) {
+      chatEndRef.current.parentElement.scrollTop = chatEndRef.current.parentElement.scrollHeight;
+    }
   }, [chatMessages]);
 
   const initGame = useCallback(() => {

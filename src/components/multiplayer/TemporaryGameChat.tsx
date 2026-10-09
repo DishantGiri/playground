@@ -51,13 +51,18 @@ export function TemporaryGameChat({
   const [latestToast, setLatestToast] = useState<QuickMessage | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const chatScrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const prevMessagesCountRef = useRef<number>(0);
   const lastProcessedMsgId = useRef<string | null>(null);
 
-  // Auto-scroll to bottom of chat when new messages arrive
+  // Auto-scroll to bottom of chat container ONLY (never scroll the entire page/window)
   useEffect(() => {
-    if (isOpen && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (isOpen && chatScrollContainerRef.current) {
+      const count = messages?.length || 0;
+      if (count > 0 && count !== prevMessagesCountRef.current) {
+        prevMessagesCountRef.current = count;
+        chatScrollContainerRef.current.scrollTop = chatScrollContainerRef.current.scrollHeight;
+      }
     }
   }, [messages, isOpen]);
 
@@ -183,8 +188,8 @@ export function TemporaryGameChat({
               </span>
             </div>
 
-            {/* Scrollable Message History */}
-            <div className="p-3.5 space-y-2.5 max-h-[220px] overflow-y-auto bg-slate-50/50">
+            {/* Scrollable Message History (internal scroll only) */}
+            <div ref={chatScrollContainerRef} className="p-3.5 space-y-2.5 max-h-[220px] overflow-y-auto bg-slate-50/50">
               {messages.length === 0 ? (
                 <div className="py-6 text-center text-xs text-[#9CA3AF] space-y-1">
                   <p className="font-bold">No messages yet.</p>
@@ -223,7 +228,6 @@ export function TemporaryGameChat({
                   );
                 })
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             {/* Quick Emoji Reactions Bar */}
