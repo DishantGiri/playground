@@ -10,13 +10,12 @@ import {
   Pencil,
   Eraser,
   Undo2,
-  Redo2,
   Lightbulb,
-  CheckCircle2,
   Clock,
   Heart,
   Sparkles,
-  Flame,
+  Keyboard,
+  CheckCircle2,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
 
@@ -396,17 +395,6 @@ export function Sudoku({ activitySlug = "sudoku" }: Props) {
     }
   }, [history, historyIndex]);
 
-  // Redo
-  const handleRedo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      sound.playClick();
-      const next = history[historyIndex + 1];
-      setCurrentGrid(next.grid.map((r) => [...r]));
-      setNotes(next.notes.map((r) => r.map((c) => [...c])));
-      setHistoryIndex(historyIndex + 1);
-    }
-  }, [history, historyIndex]);
-
   // Hint: fills selected or first empty cell with solution
   const handleHint = () => {
     if (hintsLeft <= 0 || isCompleted || isPaused) return;
@@ -460,8 +448,7 @@ export function Sudoku({ activitySlug = "sudoku" }: Props) {
       } else if (e.key === "h" || e.key === "H") {
         handleHint();
       } else if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z")) {
-        if (e.shiftKey) handleRedo();
-        else handleUndo();
+        handleUndo();
       } else if (selectedCell) {
         const [r, c] = selectedCell;
         if (e.key === "ArrowUp") setSelectedCell([Math.max(0, r - 1), c]);
@@ -473,7 +460,7 @@ export function Sudoku({ activitySlug = "sudoku" }: Props) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleErase, handleHint, handleInputNumber, handleRedo, handleUndo, isCompleted, isPaused, selectedCell]);
+  }, [handleErase, handleHint, handleInputNumber, handleUndo, isCompleted, isPaused, selectedCell]);
 
   const formatTime = (sec: number) => {
     const m = Math.floor(sec / 60);
@@ -482,251 +469,297 @@ export function Sudoku({ activitySlug = "sudoku" }: Props) {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-3.5 select-none">
-      {/* Top Header / Difficulty & Stats Bar */}
-      <div className="w-full max-w-[440px] bg-white border border-[#E8E8E5] rounded-2xl p-2.5 sm:p-3 shadow-xs flex items-center justify-between gap-2 flex-wrap">
-        {/* Difficulty Pill Selector */}
-        <div className="flex items-center gap-1 bg-[#F0F0ED] p-1 rounded-xl text-xs font-bold">
-          {(["easy", "medium", "hard", "expert"] as Difficulty[]).map((d) => (
-            <button
-              key={d}
-              onClick={() => startNewPuzzle(d)}
-              className={`px-2 sm:px-2.5 py-1 rounded-lg uppercase tracking-wider text-[10px] transition-all cursor-pointer ${
-                difficulty === d ? "bg-white text-[#202124] shadow-xs font-black" : "text-[#6B7280] hover:text-[#202124]"
-              }`}
-            >
-              {d}
-            </button>
-          ))}
-        </div>
-
-        {/* Timer & Mistakes */}
-        <div className="flex items-center gap-2.5 sm:gap-3 text-xs font-bold">
-          <div className="flex items-center gap-1 text-[#6B7280]">
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-            <span>Mistakes:</span>
-            <span className={mistakes > 0 ? "text-rose-600 font-black" : "text-[#202124] font-black"}>
-              {mistakes}/3
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5 bg-[#F0F0ED] px-2.5 py-1 rounded-lg font-mono text-[#202124]">
-            <Clock className="w-3.5 h-3.5 text-[#6B7280]" />
-            <span>{formatTime(timerSeconds)}</span>
-          </div>
-
-          <button
-            onClick={() => setIsPaused(!isPaused)}
-            className="p-1.5 rounded-lg hover:bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] transition-colors cursor-pointer"
-            title={isPaused ? "Resume" : "Pause"}
-          >
-            {isPaused ? <Play className="w-3.5 h-3.5 text-emerald-600" /> : <Pause className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Main 9x9 Sudoku Grid Container */}
-      <div className="relative bg-white border-2 border-[#1E293B] rounded-2xl sm:rounded-3xl p-1.5 sm:p-2.5 shadow-md aspect-square w-full max-w-[440px]">
-        {/* Paused Overlay */}
-        {isPaused && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-6 text-center space-y-4 z-20 animate-in fade-in">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-sm">
-              <Pause className="w-7 h-7" />
-            </div>
-            <h3 className="text-xl font-black text-[#202124]">Game Paused</h3>
-            <p className="text-xs text-[#6B7280]">Take a breather! Board is concealed while paused.</p>
-            <button
-              onClick={() => setIsPaused(false)}
-              className="px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
-            >
-              <Play className="w-3.5 h-3.5 fill-white" />
-              <span>Resume Game</span>
-            </button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-9 grid-rows-9 w-full h-full border border-[#1E293B] rounded-xl overflow-hidden bg-slate-100">
-          {currentGrid.map((row, r) =>
-            row.map((val, c) => {
-              const isInitial = initialGrid[r][c] !== 0;
-              const isSelected = selectedCell?.[0] === r && selectedCell?.[1] === c;
-              const isSameRowOrCol =
-                selectedCell && (selectedCell[0] === r || selectedCell[1] === c);
-              const isSameBox =
-                selectedCell &&
-                getBoxIndex(r, c) === getBoxIndex(selectedCell[0], selectedCell[1]);
-              const isSameNum = selectedNumber !== null && val === selectedNumber;
-              const hasConflict = conflicts.has(`${r}-${c}`);
-
-              // 3x3 Block borders
-              const borderBottom =
-                (r + 1) % 3 === 0 && r !== 8
-                  ? "border-b-[2.5px] border-b-[#1E293B]"
-                  : "border-b border-[#E2E8F0]";
-              const borderRight =
-                (c + 1) % 3 === 0 && c !== 8
-                  ? "border-r-[2.5px] border-r-[#1E293B]"
-                  : "border-r border-[#E2E8F0]";
-
-              return (
-                <div
-                  key={`${r}-${c}`}
-                  onClick={() => {
-                    sound.playClick();
-                    setSelectedCell([r, c]);
-                  }}
-                  className={`relative flex items-center justify-center font-bold text-base sm:text-lg cursor-pointer transition-all ${borderBottom} ${borderRight} ${
-                    isSelected
-                      ? "bg-[#4F46E5] text-white shadow-inner font-black z-10"
-                      : hasConflict
-                      ? "bg-rose-100 text-rose-700 font-black animate-pulse"
-                      : isSameNum
-                      ? "bg-indigo-100 text-[#4338CA] font-black"
-                      : isSameRowOrCol || isSameBox
-                      ? "bg-[#F1F5F9]"
-                      : "bg-white hover:bg-slate-50"
-                  } ${
-                    isInitial
-                      ? isSelected
-                        ? "text-white"
-                        : "text-[#0F172A]"
-                      : isSelected
-                      ? "text-white"
-                      : "text-blue-600 font-extrabold"
-                  }`}
-                >
-                  {val > 0 ? (
-                    <span>{val}</span>
-                  ) : notes[r][c].length > 0 ? (
-                    // 3x3 Candidate notes grid inside empty cell
-                    <div className="grid grid-cols-3 grid-rows-3 w-full h-full p-0.5 text-[8px] sm:text-[9px] leading-none text-[#64748B] font-semibold pointer-events-none select-none">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                        <span key={n} className="flex items-center justify-center">
-                          {notes[r][c].includes(n) ? n : ""}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* Completed Modal */}
-        {isCompleted && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-6 text-center space-y-3 z-30 animate-in fade-in zoom-in-95">
-            <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 shadow-md">
-              <Trophy className="w-9 h-9 animate-bounce" />
-            </div>
-            <h3 className="text-2xl font-black text-[#202124]">Sudoku Solved! 🎉</h3>
-            <p className="text-xs text-[#6B7280] max-w-xs leading-relaxed">
-              Fantastic analytical deduction! Solved in{" "}
-              <strong className="text-[#202124]">{formatTime(timerSeconds)}</strong> on{" "}
-              <span className="uppercase font-bold text-indigo-600">{difficulty}</span> mode with{" "}
-              {mistakes === 0 ? "zero mistakes!" : `${mistakes} mistake(s).`}
-            </p>
-            <button
-              onClick={() => startNewPuzzle()}
-              className="mt-2 px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs shadow-md active:scale-95 cursor-pointer transition-all"
-            >
-              Play Another Puzzle
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Action Tools Bar (Undo, Erase, Notes, Hint, Reset) */}
-      <div className="w-full max-w-[440px] flex items-center justify-between gap-1.5 sm:gap-2">
-        <button
-          onClick={handleUndo}
-          disabled={historyIndex <= 0}
-          className="flex-1 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] flex items-center justify-center gap-1 shadow-2xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          title="Undo [Ctrl+Z]"
-        >
-          <Undo2 className="w-3.5 h-3.5" />
-          <span className="text-[11px] sm:text-xs">Undo</span>
-        </button>
-
-        <button
-          onClick={handleErase}
-          className="flex-1 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] flex items-center justify-center gap-1 shadow-2xs transition-colors cursor-pointer"
-          title="Erase cell [Backspace]"
-        >
-          <Eraser className="w-3.5 h-3.5" />
-          <span className="text-[11px] sm:text-xs">Erase</span>
-        </button>
-
-        <button
-          onClick={() => setNotesMode(!notesMode)}
-          className={`flex-1 py-2 sm:py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1 shadow-2xs transition-all cursor-pointer ${
-            notesMode
-              ? "bg-[#4F46E5] text-white border-[#4F46E5] shadow-xs"
-              : "bg-white border-[#E8E8E5] text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED]"
-          }`}
-          title="Toggle pencil candidate notes [N]"
-        >
-          <Pencil className="w-3.5 h-3.5" />
-          <span className="text-[11px] sm:text-xs">Notes {notesMode ? "ON" : "OFF"}</span>
-        </button>
-
-        <button
-          onClick={handleHint}
-          disabled={hintsLeft <= 0}
-          className="flex-1 py-2 sm:py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] flex items-center justify-center gap-1 shadow-2xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          title="Reveal Hint [H]"
-        >
-          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-          <span className="text-[11px] sm:text-xs">Hint ({hintsLeft})</span>
-        </button>
-
-        <button
-          onClick={() => startNewPuzzle()}
-          className="p-2 sm:p-2.5 rounded-xl bg-white border border-[#E8E8E5] text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] shadow-2xs transition-colors cursor-pointer"
-          title="New Puzzle"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* 1-9 Number Keypad with Remaining Count Badges */}
-      <div className="w-full max-w-[440px] grid grid-cols-9 gap-1 sm:gap-1.5">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
-          const remaining = numberStats.remaining[num];
-          const isNumComplete = remaining === 0;
-          const isSelectedNum = selectedNumber === num;
-
-          return (
-            <button
-              key={num}
-              onClick={() => handleInputNumber(num)}
-              disabled={isNumComplete}
-              className={`group relative flex flex-col items-center justify-center py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border transition-all duration-150 active:scale-95 cursor-pointer select-none ${
-                isNumComplete
-                  ? "bg-[#F8FAFC] border-[#E2E8F0] text-[#94A3B8] opacity-50 cursor-default"
-                  : isSelectedNum
-                  ? "bg-[#4F46E5] text-white border-[#4338CA] shadow-sm ring-2 ring-indigo-400"
-                  : "bg-white border-[#E8E8E5] hover:border-[#4F46E5]/50 hover:bg-[#EEF2FF]/50 text-[#1E293B] shadow-2xs"
-              }`}
-            >
-              {/* Digit */}
-              <span className="text-base sm:text-lg font-black leading-none">{num}</span>
-
-              {/* Remaining Count Label or Completed Checkmark */}
-              <span
-                className={`text-[9px] sm:text-[10px] font-bold mt-1 leading-none ${
-                  isNumComplete
-                    ? "text-emerald-500 font-extrabold"
-                    : isSelectedNum
-                    ? "text-indigo-200"
-                    : "text-[#64748B]"
+    <div className="w-full max-w-4xl mx-auto flex flex-col items-center select-none">
+      {/* Outer Card Enclosing Entire Game Interface (Matching User's Drawn Outer Container) */}
+      <div className="w-full bg-white border border-[#E8E8E5] rounded-3xl p-3.5 sm:p-5 shadow-xs flex flex-col gap-4 sm:gap-5">
+        
+        {/* 1. TOP HEADER BAR (Matching User's Top Horizontal Outline) */}
+        <div className="w-full bg-[#F7F7F5] border border-[#E8E8E5] rounded-2xl p-2 sm:p-2.5 flex items-center justify-between gap-2.5 flex-wrap">
+          {/* Difficulty Pill Selector */}
+          <div className="flex items-center gap-1 bg-white p-1 rounded-xl text-xs font-bold border border-[#E8E8E5] shadow-2xs">
+            {(["easy", "medium", "hard", "expert"] as Difficulty[]).map((d) => (
+              <button
+                key={d}
+                onClick={() => startNewPuzzle(d)}
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg uppercase tracking-wider text-[10px] sm:text-[11px] transition-all cursor-pointer ${
+                  difficulty === d
+                    ? "bg-[#202124] text-white shadow-xs font-black"
+                    : "text-[#6B7280] hover:text-[#202124]"
                 }`}
               >
-                {isNumComplete ? "✓" : remaining}
+                {d}
+              </button>
+            ))}
+          </div>
+
+          {/* Timer, Mistakes & Pause Button */}
+          <div className="flex items-center gap-2 sm:gap-3 text-xs font-bold">
+            <div className="flex items-center gap-1.5 bg-white px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#E8E8E5] text-[#6B7280]">
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+              <span className="hidden sm:inline">Mistakes:</span>
+              <span className={mistakes > 0 ? "text-rose-600 font-black" : "text-[#202124] font-black"}>
+                {mistakes}/3
               </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 bg-white px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#E8E8E5] font-mono text-[#202124]">
+              <Clock className="w-3.5 h-3.5 text-[#6B7280]" />
+              <span>{formatTime(timerSeconds)}</span>
+            </div>
+
+            <button
+              onClick={() => setIsPaused(!isPaused)}
+              className="p-1.5 sm:p-2 bg-white rounded-xl border border-[#E8E8E5] hover:bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] transition-colors cursor-pointer"
+              title={isPaused ? "Resume" : "Pause"}
+            >
+              {isPaused ? <Play className="w-3.5 h-3.5 text-emerald-600" /> : <Pause className="w-3.5 h-3.5" />}
             </button>
-          );
-        })}
+          </div>
+        </div>
+
+        {/* 2. SPLIT LAYOUT (Matching User's Left & Right Column Outlines) */}
+        <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 sm:gap-6">
+          
+          {/* LEFT COLUMN: 9x9 Sudoku Board (Matching User's Left Box) */}
+          <div className="flex-1 w-full max-w-[430px] sm:max-w-[450px]">
+            <div className="relative bg-white border-2 border-[#1E293B] rounded-2xl sm:rounded-3xl p-1.5 sm:p-2.5 shadow-md aspect-square w-full">
+              {/* Paused Overlay */}
+              {isPaused && (
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-6 text-center space-y-4 z-20 animate-in fade-in">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-sm">
+                    <Pause className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-black text-[#202124]">Game Paused</h3>
+                  <p className="text-xs text-[#6B7280]">Take a breather! Board is concealed while paused.</p>
+                  <button
+                    onClick={() => setIsPaused(false)}
+                    className="px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-white" />
+                    <span>Resume Game</span>
+                  </button>
+                </div>
+              )}
+
+              <div className="grid grid-cols-9 grid-rows-9 w-full h-full border border-[#1E293B] rounded-xl overflow-hidden bg-slate-100">
+                {currentGrid.map((row, r) =>
+                  row.map((val, c) => {
+                    const isInitial = initialGrid[r][c] !== 0;
+                    const isSelected = selectedCell?.[0] === r && selectedCell?.[1] === c;
+                    const isSameRowOrCol =
+                      selectedCell && (selectedCell[0] === r || selectedCell[1] === c);
+                    const isSameBox =
+                      selectedCell &&
+                      getBoxIndex(r, c) === getBoxIndex(selectedCell[0], selectedCell[1]);
+                    const isSameNum = selectedNumber !== null && val === selectedNumber;
+                    const hasConflict = conflicts.has(`${r}-${c}`);
+
+                    // 3x3 Block borders
+                    const borderBottom =
+                      (r + 1) % 3 === 0 && r !== 8
+                        ? "border-b-[2.5px] border-b-[#1E293B]"
+                        : "border-b border-[#E2E8F0]";
+                    const borderRight =
+                      (c + 1) % 3 === 0 && c !== 8
+                        ? "border-r-[2.5px] border-r-[#1E293B]"
+                        : "border-r border-[#E2E8F0]";
+
+                    return (
+                      <div
+                        key={`${r}-${c}`}
+                        onClick={() => {
+                          sound.playClick();
+                          setSelectedCell([r, c]);
+                        }}
+                        className={`relative flex items-center justify-center font-bold text-base sm:text-lg cursor-pointer transition-all ${borderBottom} ${borderRight} ${
+                          isSelected
+                            ? "bg-[#4F46E5] text-white shadow-inner font-black z-10"
+                            : hasConflict
+                            ? "bg-rose-100 text-rose-700 font-black animate-pulse"
+                            : isSameNum
+                            ? "bg-indigo-100 text-[#4338CA] font-black"
+                            : isSameRowOrCol || isSameBox
+                            ? "bg-[#F1F5F9]"
+                            : "bg-white hover:bg-slate-50"
+                        } ${
+                          isInitial
+                            ? isSelected
+                              ? "text-white"
+                              : "text-[#0F172A]"
+                            : isSelected
+                            ? "text-white"
+                            : "text-blue-600 font-extrabold"
+                        }`}
+                      >
+                        {val > 0 ? (
+                          <span>{val}</span>
+                        ) : notes[r][c].length > 0 ? (
+                          // 3x3 Candidate notes grid inside empty cell
+                          <div className="grid grid-cols-3 grid-rows-3 w-full h-full p-0.5 text-[8px] sm:text-[9px] leading-none text-[#64748B] font-semibold pointer-events-none select-none">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                              <span key={n} className="flex items-center justify-center">
+                                {notes[r][c].includes(n) ? n : ""}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Completed Modal */}
+              {isCompleted && (
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-6 text-center space-y-3 z-30 animate-in fade-in zoom-in-95">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 shadow-md">
+                    <Trophy className="w-9 h-9 animate-bounce" />
+                  </div>
+                  <h3 className="text-2xl font-black text-[#202124]">Sudoku Solved! 🎉</h3>
+                  <p className="text-xs text-[#6B7280] max-w-xs leading-relaxed">
+                    Fantastic analytical deduction! Solved in{" "}
+                    <strong className="text-[#202124]">{formatTime(timerSeconds)}</strong> on{" "}
+                    <span className="uppercase font-bold text-indigo-600">{difficulty}</span> mode with{" "}
+                    {mistakes === 0 ? "zero mistakes!" : `${mistakes} mistake(s).`}
+                  </p>
+                  <button
+                    onClick={() => startNewPuzzle()}
+                    className="mt-2 px-6 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs shadow-md active:scale-95 cursor-pointer transition-all"
+                  >
+                    Play Another Puzzle
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Control Tools & 3x3 Keypad (Matching User's Right Box) */}
+          <div className="w-full lg:w-[310px] xl:w-[330px] flex flex-col justify-between gap-4 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#F7F7F5] border border-[#E8E8E5]">
+            
+            {/* Action Tools Bar (Undo, Erase, Notes, Hint) */}
+            <div>
+              <div className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider mb-2">
+                Actions
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {/* Undo */}
+                <button
+                  onClick={handleUndo}
+                  disabled={historyIndex <= 0}
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] shadow-2xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Undo [Ctrl+Z]"
+                >
+                  <Undo2 className="w-4 h-4" />
+                  <span className="text-[10px]">Undo</span>
+                </button>
+
+                {/* Erase */}
+                <button
+                  onClick={handleErase}
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] shadow-2xs transition-all cursor-pointer"
+                  title="Erase cell [Backspace]"
+                >
+                  <Eraser className="w-4 h-4" />
+                  <span className="text-[10px]">Erase</span>
+                </button>
+
+                {/* Notes Toggle */}
+                <button
+                  onClick={() => setNotesMode(!notesMode)}
+                  className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border text-xs font-bold shadow-2xs transition-all cursor-pointer ${
+                    notesMode
+                      ? "bg-[#4F46E5] text-white border-[#4F46E5] shadow-xs"
+                      : "bg-white border-[#E8E8E5] text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED]"
+                  }`}
+                  title="Toggle pencil candidate notes [N]"
+                >
+                  <Pencil className="w-4 h-4" />
+                  <span className="text-[10px]">{notesMode ? "Notes ON" : "Notes"}</span>
+                </button>
+
+                {/* Hint */}
+                <button
+                  onClick={handleHint}
+                  disabled={hintsLeft <= 0}
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-white border border-[#E8E8E5] text-xs font-bold text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED] shadow-2xs transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  title="Reveal Hint [H]"
+                >
+                  <Lightbulb className="w-4 h-4 text-amber-500" />
+                  <span className="text-[10px]">Hint ({hintsLeft})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 3x3 Keypad with Remaining Numbers Display */}
+            <div>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#6B7280] uppercase tracking-wider mb-2">
+                <span>Number Pad</span>
+                <span className="text-[10px] font-normal lowercase text-[#9CA3AF]">
+                  remaining count shown
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
+                  const remaining = numberStats.remaining[num];
+                  const isNumComplete = remaining === 0;
+                  const isSelectedNum = selectedNumber === num;
+
+                  return (
+                    <button
+                      key={num}
+                      onClick={() => handleInputNumber(num)}
+                      disabled={isNumComplete}
+                      className={`group relative flex flex-col items-center justify-center py-2.5 sm:py-3 rounded-2xl border transition-all duration-150 active:scale-95 cursor-pointer select-none ${
+                        isNumComplete
+                          ? "bg-[#F8FAFC] border-[#E2E8F0] text-[#94A3B8] opacity-50 cursor-default"
+                          : isSelectedNum
+                          ? "bg-[#4F46E5] text-white border-[#4338CA] shadow-sm ring-2 ring-indigo-400"
+                          : "bg-white border-[#E8E8E5] hover:border-[#4F46E5]/50 hover:bg-[#EEF2FF]/50 text-[#1E293B] shadow-2xs"
+                      }`}
+                    >
+                      {/* Large Number Digit */}
+                      <span className="text-xl sm:text-2xl font-black leading-none">
+                        {num}
+                      </span>
+
+                      {/* Remaining Count Label or Checkmark */}
+                      <span
+                        className={`text-[10px] font-bold mt-1 leading-none ${
+                          isNumComplete
+                            ? "text-emerald-500 font-extrabold"
+                            : isSelectedNum
+                            ? "text-indigo-200"
+                            : "text-[#64748B]"
+                        }`}
+                      >
+                        {isNumComplete ? "✓" : `${remaining} left`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Controls / Pro Tips */}
+            <div className="pt-2 border-t border-[#E8E8E5] flex items-center justify-between gap-2">
+              <button
+                onClick={() => startNewPuzzle()}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-white border border-[#E8E8E5] hover:bg-[#F0F0ED] text-[#202124] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-[#6B7280]" />
+                <span>New Puzzle</span>
+              </button>
+
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-2 rounded-xl bg-white border border-[#E8E8E5] text-[10px] text-[#6B7280] font-mono shadow-2xs">
+                <Keyboard className="w-3.5 h-3.5 text-[#9CA3AF]" />
+                <span>1-9 keys</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
