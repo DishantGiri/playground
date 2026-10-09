@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Star, Clock, Flame, ArrowRight, Play } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
-import { getActivityIcon } from "@/lib/icons";
+import { getActivityIcon, GAME_CARD_IMAGES } from "@/lib/icons";
 
 interface ActivityCardProps {
   activity: {
@@ -92,8 +92,16 @@ export function ActivityCard({ activity, featured = false }: ActivityCardProps) 
 
         {/* Icon & Title */}
         <div className="flex items-start gap-3 my-2">
-          <div className="w-11 h-11 rounded-xl bg-[#F0F0ED] border border-[#E8E8E5] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#FFF7ED] group-hover:border-[#FFEDD5] transition-all">
-            {getActivityIcon(activity.slug, "w-6 h-6 text-[#202124]")}
+          <div className="w-11 h-11 rounded-xl bg-[#F0F0ED] border border-[#E8E8E5] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#FFF7ED] group-hover:border-[#FFEDD5] transition-all overflow-hidden p-1">
+            {GAME_CARD_IMAGES[activity.slug] ? (
+              <img
+                src={GAME_CARD_IMAGES[activity.slug]}
+                alt={activity.title}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              getActivityIcon(activity.slug, "w-6 h-6 text-[#202124]")
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-sm sm:text-base font-bold text-[#202124] group-hover:text-[#F97316] transition-colors line-clamp-1">
