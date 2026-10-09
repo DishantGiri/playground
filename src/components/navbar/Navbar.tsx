@@ -8,9 +8,6 @@ import {
   Gamepad2, 
   Flame, 
   Sparkles, 
-  Trophy, 
-  Compass, 
-  Calendar, 
   Menu, 
   X, 
   User as UserIcon, 
@@ -18,9 +15,7 @@ import {
   ShieldCheck,
   Volume2,
   VolumeX,
-  Swords,
   Search,
-  LayoutGrid,
   ArrowLeft,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
@@ -87,14 +82,6 @@ export function Navbar() {
 
   const isGameplayPage = pathname?.startsWith("/play/") || pathname?.startsWith("/quiz/");
 
-  const navLinks = [
-    { name: "Explore", href: "/explore", icon: Compass },
-    { name: "Categories", href: "/explore?category=GAME", icon: LayoutGrid },
-    { name: "Multiplayer", href: "/multiplayer", icon: Swords },
-    { name: "Daily", href: "/daily", icon: Calendar },
-    { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
-  ];
-
   const user = session?.user;
   const isAdmin = (user as any)?.role === "ADMIN";
 
@@ -137,7 +124,7 @@ export function Navbar() {
             disabled={isSurprising}
             className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold text-white bg-[#F97316] hover:bg-[#EA580C] active:scale-95 transition-all cursor-pointer shadow-xs"
           >
-            <Sparkles className={`w-3 h-3 ${isSurprising ? "animate-spin" : ""}`} />
+            <Sparkles className={`w-3.5 h-3.5 ${isSurprising ? "animate-spin" : ""}`} />
             <span className="hidden sm:inline">{isSurprising ? "Next..." : "Next Game"}</span>
           </button>
         </div>
@@ -150,8 +137,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E8E8E5]">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between">
         
-        {/* Left: Brand Logo & Links */}
-        <div className="flex items-center gap-6 lg:gap-8">
+        {/* Left: Brand Logo */}
+        <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-[#F97316] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
               <Gamepad2 className="w-5 h-5 text-white group-hover:rotate-6 transition-transform" />
@@ -165,39 +152,17 @@ export function Navbar() {
               </span>
             </div>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href.split("?")[0]));
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? "text-[#6366F1] bg-[#EEF2FF] border border-[#C7D2FE]"
-                      : "text-[#6B7280] hover:text-[#202124] hover:bg-[#F0F0ED]"
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-[#6366F1]" : "text-[#6B7280]"}`} />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </nav>
         </div>
 
         {/* Center / Search Input (Medium and up) */}
-        <form onSubmit={handleQuickSearch} className="hidden md:flex items-center flex-1 max-w-xs mx-6">
+        <form onSubmit={handleQuickSearch} className="hidden md:flex items-center flex-1 max-w-md mx-6">
           <div className="relative w-full">
             <Search className="w-3.5 h-3.5 text-[#6B7280] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search games..."
+              placeholder="Search games, categories..."
               className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#F0F0ED] border border-transparent text-xs text-[#202124] placeholder-[#6B7280] focus:bg-white focus:border-[#6366F1] focus:outline-none transition-all"
             />
           </div>
@@ -360,27 +325,24 @@ export function Navbar() {
             </Link>
           </div>
 
-          <div className="space-y-1 pt-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold ${
-                    isActive
-                      ? "text-[#6366F1] bg-[#EEF2FF]"
-                      : "text-[#202124] hover:bg-[#F0F0ED]"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {link.name}
-                </Link>
-              );
-            })}
-          </div>
+          {status !== "authenticated" && (
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#E8E8E5]">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center py-2 px-3 rounded-xl bg-[#F0F0ED] text-[#202124] text-xs font-bold hover:bg-[#E8E8E5] transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center py-2 px-3 rounded-xl bg-[#F97316] text-white text-xs font-bold hover:bg-[#EA580C] transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>
