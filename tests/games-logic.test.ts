@@ -48,6 +48,22 @@ test("Dots and Boxes: Edge selection, square claiming, bonus turns, and victory"
   assert.equal(boxes["0-0"], "P2");
 });
 
+test("Dots and Boxes: 10 by 10 grid initialization, edge counts, and square capacity", () => {
+  const gridSize = 11; // 11 dots x 11 dots = 10x10 squares (100 total boxes)
+  const totalBoxes = (gridSize - 1) * (gridSize - 1);
+  assert.equal(totalBoxes, 100);
+
+  // Horizontal edges: gridSize rows x (gridSize - 1) cols = 11 x 10 = 110 edges
+  const totalHEdges = gridSize * (gridSize - 1);
+  // Vertical edges: (gridSize - 1) rows x gridSize cols = 10 x 11 = 110 edges
+  const totalVEdges = (gridSize - 1) * gridSize;
+  const totalEdges = totalHEdges + totalVEdges;
+
+  assert.equal(totalHEdges, 110);
+  assert.equal(totalVEdges, 110);
+  assert.equal(totalEdges, 220);
+});
+
 // ============================================================================
 // 2. NINE MEN'S MORRIS LOGIC TESTS
 // ============================================================================

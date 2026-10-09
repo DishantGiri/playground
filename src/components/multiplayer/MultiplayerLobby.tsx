@@ -754,11 +754,12 @@ export function MultiplayerLobby({ defaultGameType = "dots-and-boxes", initialRo
                         <label className="block text-[11px] font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">
                           Dots Grid Size
                         </label>
-                        <div className="grid grid-cols-3 gap-1.5">
+                        <div className="grid grid-cols-4 gap-1.5">
                           {[
-                            { val: 3, label: "3x3 (4 Squares)" },
-                            { val: 4, label: "4x4 (9 Squares)" },
-                            { val: 5, label: "5x5 (16 Squares)" },
+                            { val: 3, label: "2x2 (4 Sq)" },
+                            { val: 4, label: "3x3 (9 Sq)" },
+                            { val: 5, label: "4x4 (16 Sq)" },
+                            { val: 11, label: "10x10 (100 Sq)" },
                           ].map((g) => (
                             <button
                               key={g.val}

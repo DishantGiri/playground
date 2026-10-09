@@ -24,7 +24,7 @@ interface Props {
   activitySlug?: string;
 }
 
-type GridSize = 3 | 4 | 5; // 3x3 dots = 2x2 boxes, 4x4 dots = 3x3 boxes, 5x5 dots = 4x4 boxes
+type GridSize = 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11; // 3=2x2, 4=3x3, 5=4x4, 6=5x5, 7=6x6, 9=8x8, 11=10x10 boxes
 type Player = 1 | 2; // 1: Player 1 (Indigo/Blue), 2: Player 2 / AI (Orange/Red)
 type GameMode = "pvp" | "ai" | "online";
 type AIDifficulty = "easy" | "medium" | "hard";
@@ -307,17 +307,39 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
     );
   }
 
+  // Dynamic dimensions based on gridSize
+  const cellSize =
+    gridSize <= 4 ? 72 :
+    gridSize <= 5 ? 62 :
+    gridSize <= 6 ? 54 :
+    gridSize <= 7 ? 46 :
+    gridSize <= 9 ? 38 : 34;
+
+  const dotSize =
+    gridSize <= 5 ? 16 :
+    gridSize <= 7 ? 14 :
+    gridSize <= 9 ? 12 : 10;
+
+  const edgeThickness =
+    gridSize <= 5 ? 8 :
+    gridSize <= 7 ? 6 :
+    gridSize <= 9 ? 5 : 4;
+
+  const offset = 16;
+  const boardWidth = (gridSize - 1) * cellSize + offset * 2;
+  const boardHeight = (gridSize - 1) * cellSize + offset * 2;
+
   return (
     <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-4 select-none">
       {/* Top Controls Bar */}
       <div className="w-full bg-white border border-[#E8E8E5] rounded-2xl p-3 shadow-xs flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => {
               setMode("ai");
               resetGame();
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               mode === "ai"
                 ? "bg-[#6366F1] text-white shadow-xs"
                 : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
@@ -331,7 +353,7 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
               setMode("pvp");
               resetGame();
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               mode === "pvp"
                 ? "bg-[#6366F1] text-white shadow-xs"
                 : "bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124]"
@@ -353,13 +375,13 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
         </div>
 
         {/* Board size selector */}
-        <div className="flex items-center gap-1 bg-[#F0F0ED] p-1 rounded-xl text-xs font-bold">
-          {([3, 4, 5] as GridSize[]).map((s) => (
+        <div className="flex items-center gap-1 bg-[#F0F0ED] p-1 rounded-xl text-xs font-bold overflow-x-auto max-w-full">
+          {([3, 4, 5, 6, 7, 9, 11] as GridSize[]).map((s) => (
             <button
               key={s}
               onClick={() => resetGame(s)}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                gridSize === s ? "bg-white text-[#202124] shadow-xs" : "text-[#6B7280]"
+              className={`px-2 py-1 rounded-lg transition-all shrink-0 cursor-pointer ${
+                gridSize === s ? "bg-white text-[#202124] shadow-xs" : "text-[#6B7280] hover:text-[#202124]"
               }`}
             >
               {s - 1}×{s - 1}
@@ -382,14 +404,14 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
           )}
           <button
             onClick={() => resetGame()}
-            className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] hover:bg-[#E8E8E5] transition-colors"
+            className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] hover:bg-[#E8E8E5] transition-colors cursor-pointer"
             title="Restart Game"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
           <button
             onClick={() => setShowRules(!showRules)}
-            className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] transition-colors"
+            className="p-1.5 rounded-xl bg-[#F0F0ED] text-[#6B7280] hover:text-[#202124] transition-colors cursor-pointer"
             title="How to play"
           >
             <HelpCircle className="w-4 h-4" />
@@ -469,12 +491,12 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
       </div>
 
       {/* Main Interactive Board */}
-      <div className="bg-white border border-[#E8E8E5] rounded-3xl p-6 sm:p-8 shadow-sm flex items-center justify-center relative w-full">
+      <div className="bg-white border border-[#E8E8E5] rounded-3xl p-4 sm:p-6 shadow-sm flex items-center justify-center relative w-full overflow-x-auto max-w-full">
         <div
-          className="relative inline-block"
+          className="relative inline-block my-2"
           style={{
-            width: `${(gridSize - 1) * 72 + 24}px`,
-            height: `${(gridSize - 1) * 72 + 24}px`,
+            width: `${boardWidth}px`,
+            height: `${boardHeight}px`,
           }}
         >
           {/* Claimed Box Backgrounds */}
@@ -484,18 +506,26 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
               return (
                 <div
                   key={`box-${r}-${c}`}
-                  className={`absolute rounded-xl flex items-center justify-center font-black text-lg transition-all duration-300 ${
+                  className={`absolute rounded-md sm:rounded-xl flex items-center justify-center font-black transition-all duration-300 ${
                     owner === 1
                       ? "bg-[#6366F1]/20 text-[#6366F1] scale-100"
                       : owner === 2
                       ? "bg-[#F97316]/20 text-[#F97316] scale-100"
                       : "scale-95 opacity-0"
+                  } ${
+                    gridSize >= 10
+                      ? "text-[9px]"
+                      : gridSize >= 7
+                      ? "text-xs"
+                      : gridSize >= 5
+                      ? "text-sm"
+                      : "text-lg"
                   }`}
                   style={{
-                    left: `${c * 72 + 18}px`,
-                    top: `${r * 72 + 18}px`,
-                    width: "60px",
-                    height: "60px",
+                    left: `${c * cellSize + offset + Math.round(dotSize / 2)}px`,
+                    top: `${r * cellSize + offset + Math.round(dotSize / 2)}px`,
+                    width: `${cellSize - dotSize}px`,
+                    height: `${cellSize - dotSize}px`,
                   }}
                 >
                   {owner === 1 ? "P1" : owner === 2 ? (mode === "ai" ? "AI" : "P2") : ""}
@@ -516,15 +546,16 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
                   onClick={() => makeMove("h", r, c, turn)}
                   className={`absolute rounded-full transition-all cursor-pointer ${
                     owner === 1
-                      ? "bg-[#6366F1] h-2 shadow-xs"
+                      ? "bg-[#6366F1] shadow-xs"
                       : owner === 2
-                      ? "bg-[#F97316] h-2 shadow-xs"
-                      : "bg-[#E8E8E5] h-1.5 hover:bg-[#6366F1]/60 hover:h-2"
+                      ? "bg-[#F97316] shadow-xs"
+                      : "bg-[#E8E8E5] hover:bg-[#6366F1]/60"
                   }`}
                   style={{
-                    left: `${c * 72 + 16}px`,
-                    top: `${r * 72 + 8}px`,
-                    width: "64px",
+                    left: `${c * cellSize + offset + Math.round(dotSize / 3)}px`,
+                    top: `${r * cellSize + offset - Math.round(edgeThickness / 2)}px`,
+                    width: `${cellSize - Math.round(dotSize * 2 / 3)}px`,
+                    height: `${owner !== null ? edgeThickness : Math.max(edgeThickness - 2, 2.5)}px`,
                   }}
                   aria-label={`Horizontal edge row ${r} col ${c}`}
                 />
@@ -544,15 +575,16 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
                   onClick={() => makeMove("v", r, c, turn)}
                   className={`absolute rounded-full transition-all cursor-pointer ${
                     owner === 1
-                      ? "bg-[#6366F1] w-2 shadow-xs"
+                      ? "bg-[#6366F1] shadow-xs"
                       : owner === 2
-                      ? "bg-[#F97316] w-2 shadow-xs"
-                      : "bg-[#E8E8E5] w-1.5 hover:bg-[#6366F1]/60 hover:w-2"
+                      ? "bg-[#F97316] shadow-xs"
+                      : "bg-[#E8E8E5] hover:bg-[#6366F1]/60"
                   }`}
                   style={{
-                    left: `${c * 72 + 8}px`,
-                    top: `${r * 72 + 16}px`,
-                    height: "64px",
+                    left: `${c * cellSize + offset - Math.round(edgeThickness / 2)}px`,
+                    top: `${r * cellSize + offset + Math.round(dotSize / 3)}px`,
+                    width: `${owner !== null ? edgeThickness : Math.max(edgeThickness - 2, 2.5)}px`,
+                    height: `${cellSize - Math.round(dotSize * 2 / 3)}px`,
                   }}
                   aria-label={`Vertical edge row ${r} col ${c}`}
                 />
@@ -565,10 +597,12 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
             Array.from({ length: gridSize }).map((_, c) => (
               <div
                 key={`dot-${r}-${c}`}
-                className="absolute w-4 h-4 rounded-full bg-[#202124] shadow-xs border-2 border-white pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+                className="absolute rounded-full bg-[#202124] shadow-xs border-2 border-white pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
                 style={{
-                  left: `${c * 72 + 12}px`,
-                  top: `${r * 72 + 12}px`,
+                  left: `${c * cellSize + offset}px`,
+                  top: `${r * cellSize + offset}px`,
+                  width: `${dotSize}px`,
+                  height: `${dotSize}px`,
                 }}
               />
             ))
