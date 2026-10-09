@@ -37,7 +37,22 @@ export function ActivityCard({
   className = "",
   onClick,
 }: ActivityCardProps) {
-  const isQuiz = activity.category === "QUIZ" || activity.type === "TRIVIA";
+  const MASTER_PLAY_GAMES = [
+    "dots-and-boxes",
+    "nine-mens-morris",
+    "whack-a-mole",
+    "sudoku",
+    "daily-word-guess",
+    "hangman",
+    "general-knowledge-quiz",
+    "flag-country-quiz",
+    "science-quiz",
+    "guess-the-country",
+    "true-or-false",
+  ];
+  const isQuiz =
+    (activity.category === "QUIZ" || activity.type === "TRIVIA") &&
+    !MASTER_PLAY_GAMES.includes(activity.slug);
   const targetUrl = isQuiz ? `/quiz/${activity.slug}` : `/play/${activity.slug}`;
   const initialImage = getActivityImage(activity);
   const [imageSrc, setImageSrc] = useState(initialImage);

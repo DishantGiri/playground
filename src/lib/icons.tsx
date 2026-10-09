@@ -72,8 +72,28 @@ export function getActivityIcon(slug: string, className = "w-6 h-6") {
       return <Globe className={`${className} text-cyan-500`} />;
     case "impossible-quiz":
       return <HelpCircle className={`${className} text-rose-500`} />;
-    case "guess-the-country":
+    case "dots-and-boxes":
+      return <CircleDot className={`${className} text-cyan-500`} />;
+    case "nine-mens-morris":
+      return <Layers className={`${className} text-indigo-500`} />;
+    case "whack-a-mole":
+      return <MousePointerClick className={`${className} text-amber-500`} />;
+    case "sudoku":
+      return <Binary className={`${className} text-emerald-500`} />;
+    case "daily-word-guess":
+      return <Keyboard className={`${className} text-teal-500`} />;
+    case "hangman":
+      return <HelpCircle className={`${className} text-rose-500`} />;
+    case "general-knowledge-quiz":
+      return <Globe className={`${className} text-cyan-500`} />;
+    case "flag-country-quiz":
       return <Flag className={`${className} text-blue-500`} />;
+    case "science-quiz":
+      return <BrainCircuit className={`${className} text-purple-500`} />;
+    case "true-or-false":
+      return <Zap className={`${className} text-yellow-500`} />;
+    case "guess-the-country":
+      return <Flag className={`${className} text-emerald-500`} />;
     case "nostalgia-quiz":
       return <Tv className={`${className} text-purple-500`} />;
     default:

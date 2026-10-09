@@ -70,6 +70,171 @@ const usersData = [
 
 const activitiesData = [
   {
+    "id": "act_dots_and_boxes",
+    "title": "Dots and Boxes Strategy",
+    "slug": "dots-and-boxes",
+    "description": "Tactical territory conquest! Connect dots, claim squares, gain bonus turns, and test your wits against smart heuristic AI or a friend.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/connect-4.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 4200,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_nine_mens_morris",
+    "title": "Nine Men's Morris",
+    "slug": "nine-mens-morris",
+    "description": "Ancient strategic mill game! Place pieces, align 3 in a row, capture opposing pieces, and master Phase 3 flying maneuvers.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/connect-4.png",
+    "difficulty": "HARD",
+    "estimatedTime": "5 min",
+    "points": 50,
+    "playCount": 3890,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_whack_a_mole",
+    "title": "Whack-a-Mole Arcade",
+    "slug": "whack-a-mole",
+    "description": "High-octane reflex arcade! Tap moles before they duck, chain insane combo multipliers, hit golden moles, and dodge dangerous bomb traps.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/click-frenzy.jpg",
+    "difficulty": "EASY",
+    "estimatedTime": "1 min",
+    "points": 30,
+    "playCount": 12840,
+    "rating": 4.8,
+    "active": true
+  },
+  {
+    "id": "act_sudoku",
+    "title": "Sudoku Master",
+    "slug": "sudoku",
+    "description": "Authentic 9x9 backtracking logic puzzle generator with unique solutions, pencil candidate notes, instant conflict highlighting, and 4 difficulty tiers.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/number-guess.png",
+    "difficulty": "HARD",
+    "estimatedTime": "5 min",
+    "points": 45,
+    "playCount": 8920,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_daily_word_guess",
+    "title": "Daily Word Guess",
+    "slug": "daily-word-guess",
+    "description": "Wordle-style vocabulary deduction! Guess the hidden 5-letter word in 6 attempts with color feedback, streaks, and shareable result tiles.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/typing-sprint.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 35,
+    "playCount": 18450,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_hangman",
+    "title": "Hangman Word Mystery",
+    "slug": "hangman",
+    "description": "Classic vocabulary deduction! Guess letters from categorized topics (Animals, Countries, Tech, Cinema) before the 6-stage gallows completes.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/impossible-quiz.jpg",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "2 min",
+    "points": 30,
+    "playCount": 7800,
+    "rating": 4.7,
+    "active": true
+  },
+  {
+    "id": "act_general_knowledge_quiz",
+    "title": "General Knowledge Arena",
+    "slug": "general-knowledge-quiz",
+    "description": "High-priority trivia showdown! Dynamic 10 and 15 question modes spanning science, geography, history, and culture with timed challenges.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/general-knowledge-blitz.jpg",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 16500,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_flag_country_quiz",
+    "title": "Flag & Country Quiz",
+    "slug": "flag-country-quiz",
+    "description": "Identify world flags and sovereign nations across dual challenge modes with capital city hints and streak multipliers.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/guess-the-country.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "2 min",
+    "points": 35,
+    "playCount": 9400,
+    "rating": 4.8,
+    "active": true
+  },
+  {
+    "id": "act_science_quiz",
+    "title": "Science & Nature Quiz",
+    "slug": "science-quiz",
+    "description": "Explore the cosmos, quantum physics, chemical reactions, and biology with verified scientific explanations and score breakdowns.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/impossible-quiz.jpg",
+    "difficulty": "HARD",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 8200,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_guess_the_country",
+    "title": "Guess the Country",
+    "slug": "guess-the-country",
+    "description": "Cartographic detective game! Recognize nations through territory SVG silhouettes, capital cities, monuments, and border clues.",
+    "category": "QUIZ",
+    "type": "GUESSING_GAME",
+    "thumbnail": "/images/activities/guess-the-country.png",
+    "difficulty": "HARD",
+    "estimatedTime": "3 min",
+    "points": 45,
+    "playCount": 11300,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_true_or_false",
+    "title": "True or False Fact Blitz",
+    "slug": "true-or-false",
+    "description": "Rapid-fire fact verification! Discriminate genuine scientific and historical truths from popular urban myths in Blitz and Survival modes.",
+    "category": "QUIZ",
+    "type": "FACT",
+    "thumbnail": "/images/activities/reaction-test.jpg",
+    "difficulty": "EASY",
+    "estimatedTime": "2 min",
+    "points": 30,
+    "playCount": 14200,
+    "rating": 4.8,
+    "active": true
+  },
+  {
     "id": "cmuz561680004nei0ffnhej3d",
     "title": "How Fast Are Your Reflexes?",
     "slug": "reaction-test",
@@ -2066,11 +2231,17 @@ async function main() {
   }
   console.log("Created " + usersData.length + " users.");
 
-  // 3. Seed Activities (Including Connect 4, Memory Game, Number Guess, etc.)
-  for (const act of activitiesData) {
+  // 3. Seed Activities (Including All 11 Master Games, Connect 4, Memory Game, etc.)
+  const seenSlugs = new Set<string>();
+  const uniqueActivities = activitiesData.filter((act) => {
+    if (seenSlugs.has(act.slug)) return false;
+    seenSlugs.add(act.slug);
+    return true;
+  });
+  for (const act of uniqueActivities) {
     await prisma.activity.create({ data: act });
   }
-  console.log("Created " + activitiesData.length + " activities.");
+  console.log("Created " + uniqueActivities.length + " activities.");
 
   // 4. Seed Quizzes and All Questions
   for (const q of quizzesData) {

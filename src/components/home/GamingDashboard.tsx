@@ -138,94 +138,95 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
   }, [topUsers]);
 
   // Featured 3 Top Showcase Games
+  // Featured 3 Top Showcase Games (Featuring High Priority General Knowledge Quiz)
   const featuredGames = [
     {
-      slug: "connect-4",
-      title: "Connect 4 Duel",
-      subtitle: "152k Players • 2-Player & AI",
+      slug: "general-knowledge-quiz",
+      title: "General Knowledge Quiz",
+      subtitle: "High-Priority Trivia Arena • 10 & 15 Questions",
+      badge: "⭐ HIGH PRIORITY",
+      badgeColor: "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]",
+      btnColor: "bg-[#059669] hover:bg-[#047857] text-white",
+      bgGradient: "bg-gradient-to-br from-[#ECFDF5] via-white to-[#F0FDFA]",
+      border: "border-[#A7F3D0]/70",
+      image: "/images/activities/general-knowledge-blitz.jpg",
+      iconSlug: "general-knowledge-quiz",
+    },
+    {
+      slug: "dots-and-boxes",
+      title: "Dots & Boxes Strategy",
+      subtitle: "Tactical Territory • Heuristic AI & 2-Player",
       badge: "🔥 HOT",
       badgeColor: "bg-[#FFF7ED] text-[#C2410C] border-[#FFEDD5]",
       btnColor: "bg-[#F97316] hover:bg-[#EA580C] text-white",
       bgGradient: "bg-gradient-to-br from-[#EEF2FF] via-white to-[#FFF7ED]",
       border: "border-[#E8E8E5]",
       image: "/images/connect-4.png",
-      iconSlug: "connect-4",
+      iconSlug: "dots-and-boxes",
     },
     {
-      slug: "memory-game",
-      title: "Card Memory Match",
-      subtitle: "98k Players • 4x6 Illustrated Arena",
-      badge: "⭐ 4.9",
+      slug: "sudoku",
+      title: "Sudoku Master",
+      subtitle: "Backtracking 9x9 Logic • Notes & 4 Tiers",
+      badge: "⚡ LOGIC",
       badgeColor: "bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]",
       btnColor: "bg-[#6366F1] hover:bg-[#4F46E5] text-white",
       bgGradient: "bg-gradient-to-br from-[#FFF7ED] via-white to-[#EEF2FF]",
       border: "border-[#E8E8E5]",
-      image: "/images/fox-card.png",
-      iconSlug: "memory-game",
-    },
-    {
-      slug: "reaction-test",
-      title: "Reaction Speed Tap",
-      subtitle: "114k Players • Sub-250ms Reflexes",
-      badge: "⚡ FAST",
-      badgeColor: "bg-[#FEF2F2] text-[#DC2626] border-[#FEE2E2]",
-      btnColor: "bg-[#F97316] hover:bg-[#EA580C] text-white",
-      bgGradient: "bg-gradient-to-br from-[#F0FDF4] via-white to-[#FFF7ED]",
-      border: "border-[#E8E8E5]",
-      image: "/images/reaction-test.svg",
-      iconSlug: "reaction-test",
+      image: "/images/number-guess.png",
+      iconSlug: "sudoku",
     },
   ];
 
   // Quick Games Row (6 Vertical Cards)
   const quickGames = [
     {
-      slug: "number-guess",
-      title: "Number Guess",
-      category: "Deduction",
-      players: "45k",
-      image: "/images/number-guess.png",
-      tag: "HOT",
-    },
-    {
-      slug: "typing-test",
-      title: "Typing Sprint",
-      category: "Keyboard",
-      players: "62k",
-      image: "/images/typing-sprint.png",
-      tag: "SPEED",
-    },
-    {
-      slug: "connect-4",
-      title: "Connect 4",
+      slug: "dots-and-boxes",
+      title: "Dots & Boxes",
       category: "Tactical",
-      players: "152k",
+      players: "140k",
       image: "/images/connect-4.png",
-      tag: "1v1 DUEL",
+      tag: "STRATEGY",
     },
     {
-      slug: "memory-game",
-      title: "Memory Duel",
-      category: "Cards",
-      players: "98k",
-      image: "/images/fox-card.png",
-      tag: "4x6 DECK",
+      slug: "daily-word-guess",
+      title: "Daily Word",
+      category: "Wordle",
+      players: "185k",
+      image: "/images/typing-sprint.png",
+      tag: "DAILY",
     },
     {
-      slug: "reaction-test",
-      title: "Reflex Tap",
-      category: "Reflex",
-      players: "114k",
-      image: "/images/reaction-test.svg",
-      tag: "INSTANT",
+      slug: "whack-a-mole",
+      title: "Whack-A-Mole",
+      category: "Arcade",
+      players: "128k",
+      image: "/images/activities/click-frenzy.jpg",
+      tag: "REFLEX",
     },
     {
-      slug: "would-you-rather",
-      title: "Dilemmas",
-      category: "Casual",
-      players: "38k",
-      image: "/images/would-you-rather.svg",
-      tag: "CHOICE",
+      slug: "nine-mens-morris",
+      title: "9 Men's Morris",
+      category: "Mill Game",
+      players: "95k",
+      image: "/images/activities/connect-4.png",
+      tag: "ANCIENT",
+    },
+    {
+      slug: "sudoku",
+      title: "Sudoku 9x9",
+      category: "Puzzle",
+      players: "112k",
+      image: "/images/number-guess.png",
+      tag: "LOGIC",
+    },
+    {
+      slug: "general-knowledge-quiz",
+      title: "General Trivia",
+      category: "Quiz",
+      players: "165k",
+      image: "/images/activities/general-knowledge-blitz.jpg",
+      tag: "HOT",
     },
   ];
 
@@ -235,12 +236,18 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       // Category filter
       if (selectedCategory !== "all") {
         const cat = selectedCategory.toLowerCase();
-        if (cat === "board" && act.slug !== "connect-4") return false;
+        if (cat === "board" && !["connect-4", "dots-and-boxes", "nine-mens-morris"].includes(act.slug)) return false;
         if (cat === "memory" && act.slug !== "memory-game") return false;
-        if (cat === "reflex" && act.slug !== "reaction-test" && act.slug !== "click-frenzy") return false;
-        if (cat === "typing" && act.slug !== "typing-test") return false;
-        if (cat === "puzzle" && act.slug !== "number-guess" && act.category.toLowerCase() !== "puzzle") return false;
-        if (cat === "trivia" && act.category.toLowerCase() !== "quiz" && act.category.toLowerCase() !== "trivia") return false;
+        if (cat === "reflex" && !["reaction-test", "click-frenzy", "whack-a-mole"].includes(act.slug)) return false;
+        if (cat === "typing" && !["typing-test", "daily-word-guess", "hangman"].includes(act.slug)) return false;
+        if (cat === "puzzle" && !["number-guess", "sudoku", "pixel-art"].includes(act.slug) && act.category.toLowerCase() !== "puzzle") return false;
+        if (
+          cat === "trivia" &&
+          !["general-knowledge-quiz", "flag-country-quiz", "science-quiz", "guess-the-country", "true-or-false"].includes(act.slug) &&
+          act.category.toLowerCase() !== "quiz" &&
+          act.category.toLowerCase() !== "trivia"
+        )
+          return false;
         if (cat === "casual" && act.category.toLowerCase() !== "casual" && act.category.toLowerCase() !== "fun") return false;
       }
 
