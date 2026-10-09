@@ -332,213 +332,195 @@ export function MultiplayerLobby({ defaultGameType = "number-guess", initialRoom
 
   // Otherwise, render Room Setup Lobby
   return (
-    <div className="w-full max-w-xl mx-auto space-y-6">
-      {/* Intro Header */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold">
-          <Smartphone className="w-3.5 h-3.5" />
-          <span>Cross-Device 2-Player Arena</span>
-          <Laptop className="w-3.5 h-3.5" />
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Play From 2 Different Devices
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-          Create a room code on one device and enter it on a second phone or laptop to play together live in real-time!
-        </p>
-      </div>
+    <div className="w-full min-w-0 rounded-2xl sm:rounded-3xl border border-[#E8E8E5] bg-[#F7F7F5] p-3 sm:p-4 lg:p-5 shadow-2xs select-none text-[#202124]">
+      {/* 2-Card Full-Width Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 w-full items-stretch">
+        
+        {/* Left Card: Create New Room (Host) */}
+        <div className="rounded-2xl border border-[#E8E8E5] bg-white p-4 sm:p-6 shadow-xs flex flex-col justify-between space-y-5">
+          <form onSubmit={handleCreateRoom} className="space-y-4 flex flex-col justify-between flex-1">
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#F97316] bg-[#FFF7ED] border border-[#FFEDD5] px-2 py-0.5 rounded-lg">
+                    Host Game
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-black text-[#202124] mt-1">
+                    Create New Room
+                  </h3>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-[#FFF7ED] border border-[#FFEDD5] flex items-center justify-center text-[#F97316] shrink-0">
+                  <Plus className="w-5 h-5" />
+                </div>
+              </div>
 
-      {/* Tabs: Create Room vs Join Room */}
-      <div className="p-1 rounded-2xl bg-slate-100 border border-slate-200 flex">
-        <button
-          onClick={() => {
-            sound.playClick();
-            setTab("create");
-          }}
-          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-            tab === "create"
-              ? "bg-white text-slate-900 shadow-sm border border-slate-200"
-              : "text-slate-600 hover:text-slate-900"
-          }`}
-        >
-          <Plus className="w-4 h-4 text-violet-600" />
-          <span>Create New Room</span>
-        </button>
+              {/* Player Name */}
+              <div>
+                <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">
+                  Your Player Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  maxLength={20}
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  placeholder="e.g. Alex"
+                  className="w-full text-sm font-bold py-3 px-4 rounded-xl bg-[#F7F7F5] border border-[#E8E8E5] focus:border-[#F97316] focus:bg-white focus:outline-hidden transition-all text-[#202124]"
+                />
+              </div>
 
-        <button
-          onClick={() => {
-            sound.playClick();
-            setTab("join");
-          }}
-          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-            tab === "join"
-              ? "bg-white text-slate-900 shadow-sm border border-slate-200"
-              : "text-slate-600 hover:text-slate-900"
-          }`}
-        >
-          <LogIn className="w-4 h-4 text-indigo-600" />
-          <span>Join Existing Room</span>
-        </button>
-      </div>
-
-      {/* Error alert */}
-      {errorMessage && (
-        <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-semibold text-center">
-          {errorMessage}
-        </div>
-      )}
-
-      {/* Tab: Create Room */}
-      {tab === "create" && (
-        <form onSubmit={handleCreateRoom} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-          {/* Player Name */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Your Player Name:
-            </label>
-            <input
-              type="text"
-              required
-              maxLength={20}
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="e.g. Alex"
-              className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-600 focus:bg-white focus:outline-hidden transition-all text-slate-900"
-            />
-          </div>
-
-          {/* Select Game */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-slate-700">
-              Select Game Mode:
-            </label>
-            <div className="grid grid-cols-1 gap-2.5">
-              {AVAILABLE_GAMES.map((game) => {
-                const Icon = game.icon;
-                const isSelected = selectedGame === game.id;
-                return (
-                  <div
-                    key={game.id}
-                    onClick={() => {
-                      sound.playClick();
-                      setSelectedGame(game.id);
-                    }}
-                    className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                      isSelected
-                        ? "border-violet-600 bg-violet-50/50 shadow-xs"
-                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
+              {/* Select Game */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-[#6B7280] uppercase tracking-wider">
+                  Choose Game Duel
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  {AVAILABLE_GAMES.map((game) => {
+                    const Icon = game.icon;
+                    const isSelected = selectedGame === game.id;
+                    return (
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                        key={game.id}
+                        onClick={() => {
+                          sound.playClick();
+                          setSelectedGame(game.id);
+                        }}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
                           isSelected
-                            ? "bg-violet-600 text-white border-violet-700"
-                            : "bg-slate-100 text-slate-600 border-slate-200"
+                            ? "border-[#F97316] bg-[#FFF7ED] shadow-2xs"
+                            : "border-[#E8E8E5] bg-[#F7F7F5] hover:border-[#D1D5DB] hover:bg-white"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-slate-900">{game.title}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                            {game.badge}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center border shrink-0 ${
+                              isSelected
+                                ? "bg-[#F97316] text-white border-[#EA580C]"
+                                : "bg-white text-[#6B7280] border-[#E8E8E5]"
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="text-left min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs sm:text-sm font-bold text-[#202124] truncate">
+                                {game.title}
+                              </span>
+                              <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white text-[#6B7280] border border-[#E8E8E5] shrink-0">
+                                {game.badge}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-[#6B7280] mt-0.5 line-clamp-1">
+                              {game.description}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">{game.description}</p>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4x6 Board Info for Memory Duel */}
-          {selectedGame === "memory-duel" && (
-            <div className="p-3.5 rounded-2xl bg-violet-50 border border-violet-200 text-xs font-bold text-violet-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-violet-600 animate-ping" />
-                <span>4x6 Card Arena (24 Cards • 6 on X-axis • 12 Illustrated Pairs)</span>
+                    );
+                  })}
+                </div>
               </div>
-              <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-white text-violet-700 border border-violet-200">
-                4x6
-              </span>
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={isLoading || !playerName}
-            className="w-full py-3.5 px-6 rounded-2xl font-black text-sm text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 shadow-md shadow-violet-200 transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>{isLoading ? "Generating Room..." : "Create Room & Get Code"}</span>
-          </button>
-        </form>
-      )}
-
-      {/* Tab: Join Room */}
-      {tab === "join" && (
-        <form onSubmit={handleJoinRoom} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-          {/* Room Code */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Enter 4-Digit Room Code:
-            </label>
-            <input
-              type="text"
-              required
-              maxLength={8}
-              value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-              placeholder="e.g. 4829"
-              className="w-full text-center text-2xl font-black tracking-widest py-3 px-4 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-indigo-600 focus:bg-white focus:outline-hidden transition-all text-slate-900 uppercase"
-            />
-            <p className="text-[11px] text-slate-400 mt-1">
-              Ask Player 1 on the other device for their Room Code or link.
-            </p>
-          </div>
-
-          {/* Player Name */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
-              Your Player Name:
-            </label>
-            <input
-              type="text"
-              required
-              maxLength={20}
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="e.g. Sam"
-              className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-600 focus:bg-white focus:outline-hidden transition-all text-slate-900"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading || !joinCode || !playerName}
-            className="w-full py-3.5 px-6 rounded-2xl font-black text-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 shadow-md shadow-indigo-200 transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <LogIn className="w-4 h-4" />
-            <span>{isLoading ? "Connecting Devices..." : "Join Game Duel"}</span>
-          </button>
-        </form>
-      )}
-
-      {/* How it works info */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-600 space-y-2">
-        <div className="font-bold text-slate-800 flex items-center gap-1.5">
-          <Wifi className="w-4 h-4 text-emerald-600" />
-          <span>How to Play from 2 Devices:</span>
+            <button
+              type="submit"
+              disabled={isLoading || !playerName}
+              className="w-full py-3.5 px-6 rounded-xl font-black text-xs uppercase tracking-wider text-white bg-[#F97316] hover:bg-[#EA580C] disabled:opacity-50 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2 mt-4"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>{isLoading ? "Generating Room..." : "Create Room & Get 4-Digit Code"}</span>
+            </button>
+          </form>
         </div>
-        <ol className="list-decimal list-inside space-y-1 text-slate-500 text-[11px]">
-          <li><strong>Device 1 (e.g. your laptop or phone):</strong> Tap &ldquo;Create New Room&rdquo; to get a 4-digit code.</li>
-          <li><strong>Device 2 (e.g. your second phone or friend&apos;s phone):</strong> Open this page and enter the code.</li>
-          <li><strong>Real-Time Sync:</strong> Both screens synchronize moves, scores, and turns instantly!</li>
-        </ol>
+
+        {/* Right Card: Join Room & How to Play (Guest) */}
+        <div className="rounded-2xl border border-[#E8E8E5] bg-white p-4 sm:p-6 shadow-xs flex flex-col justify-between space-y-5">
+          
+          <form onSubmit={handleJoinRoom} className="space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#6366F1] bg-[#EEF2FF] border border-[#C7D2FE] px-2 py-0.5 rounded-lg">
+                  Join Duel
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-[#202124] mt-1">
+                  Enter 4-Digit Code
+                </h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-[#EEF2FF] border border-[#C7D2FE] flex items-center justify-center text-[#6366F1] shrink-0">
+                <LogIn className="w-5 h-5" />
+              </div>
+            </div>
+
+            {/* Error banner if present */}
+            {errorMessage && (
+              <div className="p-3 bg-[#FEF2F2] border border-[#FCA5A5] text-[#DC2626] rounded-xl text-xs font-semibold text-center animate-in fade-in">
+                {errorMessage}
+              </div>
+            )}
+
+            {/* Room Code Input */}
+            <div>
+              <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">
+                Enter Room Code
+              </label>
+              <input
+                type="text"
+                required
+                maxLength={8}
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                placeholder="e.g. 4829"
+                className="w-full text-center text-3xl font-black tracking-widest py-3 px-4 rounded-xl bg-[#F7F7F5] border-2 border-[#E8E8E5] focus:border-[#6366F1] focus:bg-white focus:outline-hidden transition-all text-[#202124] uppercase font-mono"
+              />
+              <p className="text-[11px] text-[#6B7280] mt-1.5 text-center">
+                Get this 4-digit code from Player 1 on the other phone or laptop.
+              </p>
+            </div>
+
+            {/* Player Name Input */}
+            <div>
+              <label className="block text-xs font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">
+                Your Player Name (Player 2)
+              </label>
+              <input
+                type="text"
+                required
+                maxLength={20}
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="e.g. Sam"
+                className="w-full text-sm font-bold py-3 px-4 rounded-xl bg-[#F7F7F5] border border-[#E8E8E5] focus:border-[#6366F1] focus:bg-white focus:outline-hidden transition-all text-[#202124]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || !joinCode || !playerName}
+              className="w-full py-3.5 px-6 rounded-xl font-black text-xs uppercase tracking-wider text-white bg-[#6366F1] hover:bg-[#4F46E5] disabled:opacity-50 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>{isLoading ? "Connecting Devices..." : "Connect & Join Duel"}</span>
+            </button>
+          </form>
+
+          {/* How 2-Device Arena Works */}
+          <div className="bg-[#F7F7F5] border border-[#E8E8E5] rounded-xl p-4 text-xs text-[#202124] space-y-2 mt-4">
+            <div className="font-bold text-[#202124] flex items-center gap-1.5">
+              <Wifi className="w-4 h-4 text-[#16A34A]" />
+              <span>How 2-Device Play Works:</span>
+            </div>
+            <ol className="list-decimal list-inside space-y-1.5 text-[#6B7280] text-[11px] leading-relaxed">
+              <li><strong>Device 1:</strong> Select a game and click &ldquo;Create Room&rdquo; to get your 4-digit code.</li>
+              <li><strong>Device 2:</strong> Type the code into the box above and click &ldquo;Connect&rdquo;.</li>
+              <li><strong>Play Together:</strong> Both screens sync moves, cards, and turns instantly in real-time!</li>
+            </ol>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
