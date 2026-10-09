@@ -393,16 +393,8 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
                 />
               </div>
 
-              {/* Top Row: Icon + Badge */}
-              <div className="flex items-center justify-between relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-white border border-[#E8E8E5] flex items-center justify-center shadow-2xs overflow-hidden p-1">
-                  {game.image ? (
-                    <img src={game.image} alt={game.title} className="w-full h-full object-contain" />
-                  ) : (
-                    getActivityIcon(game.iconSlug, "w-5 h-5")
-                  )}
-                </div>
-
+              {/* Top Row: Badge */}
+              <div className="flex items-center justify-end relative z-10">
                 <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shadow-2xs ${game.badgeColor}`}>
                   {game.badge}
                 </span>
