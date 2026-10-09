@@ -493,6 +493,166 @@ const activitiesData = [
 
 const quizzesData = [
   {
+    "id": "quiz_gen_knowledge",
+    "title": "General Knowledge Arena",
+    "slug": "general-knowledge-quiz",
+    "description": "Multi-category trivia arena covering science, history, geography, tech, and culture with timed challenges.",
+    "category": "TRIVIA",
+    "difficulty": "MEDIUM",
+    "timeLimit": 15,
+    "thumbnail": "🌍",
+    "questions": [
+      {
+        "id": "q_gk_1",
+        "question": "What is the largest living species of lizard on Earth?",
+        "optionsJson": "[\"Komodo Dragon\",\"Gila Monster\",\"Perentie\",\"Saltwater Monitor\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "The Komodo dragon can grow up to 3 meters (10 feet) in length and weigh over 70 kg."
+      },
+      {
+        "id": "q_gk_2",
+        "question": "Which country gifted the Statue of Liberty to the United States?",
+        "optionsJson": "[\"United Kingdom\",\"France\",\"Spain\",\"Italy\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "France gifted the Statue of Liberty in 1886 as a symbol of Franco-American alliance and friendship."
+      },
+      {
+        "id": "q_gk_3",
+        "question": "How many bones are there in an adult human body?",
+        "optionsJson": "[\"186\",\"206\",\"216\",\"226\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Adult humans typically have 206 bones, down from around 270 at birth due to bone fusion."
+      },
+      {
+        "id": "q_gk_4",
+        "question": "What is the deepest known location in the world's oceans?",
+        "optionsJson": "[\"Puerto Rico Trench\",\"Java Trench\",\"Mariana Trench (Challenger Deep)\",\"Tonga Trench\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Challenger Deep in the Mariana Trench plunges to approximately 10,928 meters (35,853 feet)."
+      },
+      {
+        "id": "q_gk_5",
+        "question": "Who was the first woman to win a Nobel Prize?",
+        "optionsJson": "[\"Marie Curie\",\"Rosalind Franklin\",\"Ada Lovelace\",\"Mother Teresa\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Marie Curie won the Nobel Prize in Physics in 1903 and later Chemistry in 1911."
+      }
+    ]
+  },
+  {
+    "id": "quiz_flag_country",
+    "title": "Flag & Country Quiz",
+    "slug": "flag-country-quiz",
+    "description": "Identify sovereign flags and capital cities across the globe.",
+    "category": "GEOGRAPHY",
+    "difficulty": "MEDIUM",
+    "timeLimit": 15,
+    "thumbnail": "🚩",
+    "questions": [
+      {
+        "id": "q_flag_1",
+        "question": "Which country has the only non-rectangular national flag in the world?",
+        "optionsJson": "[\"Switzerland\",\"Vatican City\",\"Nepal\",\"Bhutan\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Nepal's flag is formed by two stacked triangular pennants."
+      },
+      {
+        "id": "q_flag_2",
+        "question": "Which country features a maple leaf prominently on its national flag?",
+        "optionsJson": "[\"Canada\",\"Lebanon\",\"New Zealand\",\"Cyprus\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Canada adopted the iconic 11-pointed red maple leaf flag in 1965."
+      },
+      {
+        "id": "q_flag_3",
+        "question": "Which country's flag features a yellow sun with 32 rays surrounded by a steppe eagle?",
+        "optionsJson": "[\"Mongolia\",\"Kazakhstan\",\"Kyrgyzstan\",\"Uzbekistan\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Kazakhstan's sky-blue flag features a golden steppe eagle soaring beneath a 32-ray sun."
+      }
+    ]
+  },
+  {
+    "id": "quiz_science_nature",
+    "title": "Science & Nature Quiz",
+    "slug": "science-quiz",
+    "description": "Explore the frontiers of physics, chemistry, astronomy, and evolutionary biology.",
+    "category": "SCIENCE",
+    "difficulty": "HARD",
+    "timeLimit": 20,
+    "thumbnail": "🔬",
+    "questions": [
+      {
+        "id": "q_sci_1",
+        "question": "What is the speed of light in a vacuum?",
+        "optionsJson": "[\"299,792 km/s\",\"150,000 km/s\",\"450,000 km/s\",\"199,792 km/s\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Light travels at precisely 299,792,458 meters per second in a vacuum."
+      },
+      {
+        "id": "q_sci_2",
+        "question": "Which organelle is universally referred to as the powerhouse of the eukaryotic cell?",
+        "optionsJson": "[\"Nucleus\",\"Ribosome\",\"Mitochondria\",\"Golgi apparatus\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Mitochondria generate most of the chemical energy needed by cell biochemical reactions (ATP)."
+      },
+      {
+        "id": "q_sci_3",
+        "question": "What is the primary gas composing the atmosphere of Venus?",
+        "optionsJson": "[\"Nitrogen\",\"Carbon Dioxide\",\"Methane\",\"Oxygen\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Venus's dense atmosphere is roughly 96.5% carbon dioxide, triggering extreme greenhouse warming."
+      }
+    ]
+  },
+  {
+    "id": "quiz_true_false",
+    "title": "True or False Fact Blitz",
+    "slug": "true-or-false",
+    "description": "Test your ability to discriminate verified scientific and historical facts from popular urban myths.",
+    "category": "TRIVIA",
+    "difficulty": "EASY",
+    "timeLimit": 15,
+    "thumbnail": "⚡",
+    "questions": [
+      {
+        "id": "q_tf_1",
+        "question": "Bananas are botanically classified as berries, while strawberries are not.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "True: Botanically, berries develop from a flower with a single ovary. Strawberries are aggregate fruits."
+      },
+      {
+        "id": "q_tf_2",
+        "question": "The Great Wall of China is easily visible from low Earth orbit with the naked human eye.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "False: Astronauts verify the Great Wall cannot be distinguished without high-magnification optical lenses."
+      },
+      {
+        "id": "q_tf_3",
+        "question": "Octopuses have three hearts and blue copper-based blood.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "True: Two hearts pump blood to the gills, one to the body, and their blood uses copper-based hemocyanin."
+      }
+    ]
+  },
+  {
     "id": "cmuz561cl000knei0vamw9wb9",
     "title": "Quick General Knowledge Blitz",
     "slug": "general-knowledge-blitz",
@@ -1424,6 +1584,78 @@ const quizzesData = [
 
 const achievementsData = [
   {
+    "id": "ach_dots_boxes",
+    "key": "DOTS_TACTICIAN",
+    "title": "Dots & Boxes Tactician",
+    "description": "Claim 10+ squares in a single Dots and Boxes strategy game",
+    "icon": "🔲",
+    "category": "GAMES",
+    "xpReward": 80
+  },
+  {
+    "id": "ach_nine_mens",
+    "key": "MILL_CONQUEROR",
+    "title": "Mill Conqueror",
+    "description": "Form 3 Mills in Nine Men's Morris and reach Phase 3 flying",
+    "icon": "⚔️",
+    "category": "GAMES",
+    "xpReward": 90
+  },
+  {
+    "id": "ach_whack_mole",
+    "key": "MOLE_SLAYER",
+    "title": "Mole Slayer",
+    "description": "Score over 300 points and chain a 5x combo in Whack-a-Mole Arcade",
+    "icon": "🔨",
+    "category": "GAMES",
+    "xpReward": 75
+  },
+  {
+    "id": "ach_sudoku",
+    "key": "SUDOKU_MASTER",
+    "title": "Sudoku Master",
+    "description": "Solve a 9x9 Sudoku puzzle with zero mistakes",
+    "icon": "🧩",
+    "category": "GAMES",
+    "xpReward": 100
+  },
+  {
+    "id": "ach_word_guess",
+    "key": "WORDLE_GENIUS",
+    "title": "Wordle Genius",
+    "description": "Deduce the secret 5-letter Daily Word in 3 guesses or fewer",
+    "icon": "🔤",
+    "category": "GAMES",
+    "xpReward": 100
+  },
+  {
+    "id": "ach_hangman",
+    "key": "HANGMAN_SURVIVOR",
+    "title": "Hangman Survivor",
+    "description": "Solve a Hangman mystery word with zero incorrect guesses",
+    "icon": "🎪",
+    "category": "GAMES",
+    "xpReward": 80
+  },
+  {
+    "id": "ach_geo_detective",
+    "key": "GEO_EXPLORER",
+    "title": "World Cartographer",
+    "description": "Identify 10 countries in Guess the Country without giving up",
+    "icon": "🌐",
+    "category": "QUIZZES",
+    "xpReward": 90
+  },
+  {
+    "id": "ach_fact_blitz",
+    "key": "FACT_CHECKER",
+    "title": "Fact Checker",
+    "description": "Reach an 8x streak in True or False Blitz",
+    "icon": "⚡",
+    "category": "QUIZZES",
+    "xpReward": 80
+  },
+  {
     "id": "cmuz561ij0027nei01rx1ra8y",
     "key": "FIRST_GAME",
     "title": "First Game Played",
@@ -2244,7 +2476,13 @@ async function main() {
   console.log("Created " + uniqueActivities.length + " activities.");
 
   // 4. Seed Quizzes and All Questions
-  for (const q of quizzesData) {
+  const seenQuizSlugs = new Set<string>();
+  const uniqueQuizzes = quizzesData.filter((q) => {
+    if (seenQuizSlugs.has(q.slug)) return false;
+    seenQuizSlugs.add(q.slug);
+    return true;
+  });
+  for (const q of uniqueQuizzes) {
     const { questions, ...quizFields } = q;
     await prisma.quiz.create({ data: quizFields });
     if (questions && questions.length > 0) {
@@ -2258,13 +2496,19 @@ async function main() {
       }
     }
   }
-  console.log("Created " + quizzesData.length + " quizzes with all questions.");
+  console.log("Created " + uniqueQuizzes.length + " quizzes with all questions.");
 
   // 5. Seed Achievements
-  for (const ach of achievementsData) {
+  const seenAchKeys = new Set<string>();
+  const uniqueAchievements = achievementsData.filter((ach) => {
+    if (seenAchKeys.has(ach.key)) return false;
+    seenAchKeys.add(ach.key);
+    return true;
+  });
+  for (const ach of uniqueAchievements) {
     await prisma.achievement.create({ data: ach });
   }
-  console.log("Created " + achievementsData.length + " achievements.");
+  console.log("Created " + uniqueAchievements.length + " achievements.");
 
   // 6. Seed User Achievements
   for (const ua of userAchievementsData) {

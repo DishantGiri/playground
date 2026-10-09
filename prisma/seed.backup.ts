@@ -70,6 +70,171 @@ const usersData = [
 
 const activitiesData = [
   {
+    "id": "act_dots_and_boxes",
+    "title": "Dots and Boxes Strategy",
+    "slug": "dots-and-boxes",
+    "description": "Tactical territory conquest! Connect dots, claim squares, gain bonus turns, and test your wits against smart heuristic AI or a friend.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/connect-4.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 4200,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_nine_mens_morris",
+    "title": "Nine Men's Morris",
+    "slug": "nine-mens-morris",
+    "description": "Ancient strategic mill game! Place pieces, align 3 in a row, capture opposing pieces, and master Phase 3 flying maneuvers.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/connect-4.png",
+    "difficulty": "HARD",
+    "estimatedTime": "5 min",
+    "points": 50,
+    "playCount": 3890,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_whack_a_mole",
+    "title": "Whack-a-Mole Arcade",
+    "slug": "whack-a-mole",
+    "description": "High-octane reflex arcade! Tap moles before they duck, chain insane combo multipliers, hit golden moles, and dodge dangerous bomb traps.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/click-frenzy.jpg",
+    "difficulty": "EASY",
+    "estimatedTime": "1 min",
+    "points": 30,
+    "playCount": 12840,
+    "rating": 4.8,
+    "active": true
+  },
+  {
+    "id": "act_sudoku",
+    "title": "Sudoku Master",
+    "slug": "sudoku",
+    "description": "Authentic 9x9 backtracking logic puzzle generator with unique solutions, pencil candidate notes, instant conflict highlighting, and 4 difficulty tiers.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/number-guess.png",
+    "difficulty": "HARD",
+    "estimatedTime": "5 min",
+    "points": 45,
+    "playCount": 8920,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_daily_word_guess",
+    "title": "Daily Word Guess",
+    "slug": "daily-word-guess",
+    "description": "Wordle-style vocabulary deduction! Guess the hidden 5-letter word in 6 attempts with color feedback, streaks, and shareable result tiles.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/typing-sprint.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 35,
+    "playCount": 18450,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_hangman",
+    "title": "Hangman Word Mystery",
+    "slug": "hangman",
+    "description": "Classic vocabulary deduction! Guess letters from categorized topics (Animals, Countries, Tech, Cinema) before the 6-stage gallows completes.",
+    "category": "GAME",
+    "type": "MINI_GAME",
+    "thumbnail": "/images/activities/impossible-quiz.jpg",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "2 min",
+    "points": 30,
+    "playCount": 7800,
+    "rating": 4.7,
+    "active": true
+  },
+  {
+    "id": "act_general_knowledge_quiz",
+    "title": "General Knowledge Arena",
+    "slug": "general-knowledge-quiz",
+    "description": "High-priority trivia showdown! Dynamic 10 and 15 question modes spanning science, geography, history, and culture with timed challenges.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/general-knowledge-blitz.jpg",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 16500,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_flag_country_quiz",
+    "title": "Flag & Country Quiz",
+    "slug": "flag-country-quiz",
+    "description": "Identify world flags and sovereign nations across dual challenge modes with capital city hints and streak multipliers.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/guess-the-country.png",
+    "difficulty": "MEDIUM",
+    "estimatedTime": "2 min",
+    "points": 35,
+    "playCount": 9400,
+    "rating": 4.8,
+    "active": true
+  },
+  {
+    "id": "act_science_quiz",
+    "title": "Science & Nature Quiz",
+    "slug": "science-quiz",
+    "description": "Explore the cosmos, quantum physics, chemical reactions, and biology with verified scientific explanations and score breakdowns.",
+    "category": "QUIZ",
+    "type": "TRIVIA",
+    "thumbnail": "/images/activities/impossible-quiz.jpg",
+    "difficulty": "HARD",
+    "estimatedTime": "3 min",
+    "points": 40,
+    "playCount": 8200,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_guess_the_country",
+    "title": "Guess the Country",
+    "slug": "guess-the-country",
+    "description": "Cartographic detective game! Recognize nations through territory SVG silhouettes, capital cities, monuments, and border clues.",
+    "category": "QUIZ",
+    "type": "GUESSING_GAME",
+    "thumbnail": "/images/activities/guess-the-country.png",
+    "difficulty": "HARD",
+    "estimatedTime": "3 min",
+    "points": 45,
+    "playCount": 11300,
+    "rating": 4.9,
+    "active": true
+  },
+  {
+    "id": "act_true_or_false",
+    "title": "True or False Fact Blitz",
+    "slug": "true-or-false",
+    "description": "Rapid-fire fact verification! Discriminate genuine scientific and historical truths from popular urban myths in Blitz and Survival modes.",
+    "category": "QUIZ",
+    "type": "FACT",
+    "thumbnail": "/images/activities/reaction-test.jpg",
+    "difficulty": "EASY",
+    "estimatedTime": "2 min",
+    "points": 30,
+    "playCount": 14200,
+    "rating": 4.8,
+    "active": true
+  },
+  {
     "id": "cmuz561680004nei0ffnhej3d",
     "title": "How Fast Are Your Reflexes?",
     "slug": "reaction-test",
@@ -327,6 +492,166 @@ const activitiesData = [
 ];
 
 const quizzesData = [
+  {
+    "id": "quiz_gen_knowledge",
+    "title": "General Knowledge Arena",
+    "slug": "general-knowledge-quiz",
+    "description": "Multi-category trivia arena covering science, history, geography, tech, and culture with timed challenges.",
+    "category": "TRIVIA",
+    "difficulty": "MEDIUM",
+    "timeLimit": 15,
+    "thumbnail": "🌍",
+    "questions": [
+      {
+        "id": "q_gk_1",
+        "question": "What is the largest living species of lizard on Earth?",
+        "optionsJson": "[\"Komodo Dragon\",\"Gila Monster\",\"Perentie\",\"Saltwater Monitor\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "The Komodo dragon can grow up to 3 meters (10 feet) in length and weigh over 70 kg."
+      },
+      {
+        "id": "q_gk_2",
+        "question": "Which country gifted the Statue of Liberty to the United States?",
+        "optionsJson": "[\"United Kingdom\",\"France\",\"Spain\",\"Italy\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "France gifted the Statue of Liberty in 1886 as a symbol of Franco-American alliance and friendship."
+      },
+      {
+        "id": "q_gk_3",
+        "question": "How many bones are there in an adult human body?",
+        "optionsJson": "[\"186\",\"206\",\"216\",\"226\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Adult humans typically have 206 bones, down from around 270 at birth due to bone fusion."
+      },
+      {
+        "id": "q_gk_4",
+        "question": "What is the deepest known location in the world's oceans?",
+        "optionsJson": "[\"Puerto Rico Trench\",\"Java Trench\",\"Mariana Trench (Challenger Deep)\",\"Tonga Trench\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Challenger Deep in the Mariana Trench plunges to approximately 10,928 meters (35,853 feet)."
+      },
+      {
+        "id": "q_gk_5",
+        "question": "Who was the first woman to win a Nobel Prize?",
+        "optionsJson": "[\"Marie Curie\",\"Rosalind Franklin\",\"Ada Lovelace\",\"Mother Teresa\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Marie Curie won the Nobel Prize in Physics in 1903 and later Chemistry in 1911."
+      }
+    ]
+  },
+  {
+    "id": "quiz_flag_country",
+    "title": "Flag & Country Quiz",
+    "slug": "flag-country-quiz",
+    "description": "Identify sovereign flags and capital cities across the globe.",
+    "category": "GEOGRAPHY",
+    "difficulty": "MEDIUM",
+    "timeLimit": 15,
+    "thumbnail": "🚩",
+    "questions": [
+      {
+        "id": "q_flag_1",
+        "question": "Which country has the only non-rectangular national flag in the world?",
+        "optionsJson": "[\"Switzerland\",\"Vatican City\",\"Nepal\",\"Bhutan\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Nepal's flag is formed by two stacked triangular pennants."
+      },
+      {
+        "id": "q_flag_2",
+        "question": "Which country features a maple leaf prominently on its national flag?",
+        "optionsJson": "[\"Canada\",\"Lebanon\",\"New Zealand\",\"Cyprus\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Canada adopted the iconic 11-pointed red maple leaf flag in 1965."
+      },
+      {
+        "id": "q_flag_3",
+        "question": "Which country's flag features a yellow sun with 32 rays surrounded by a steppe eagle?",
+        "optionsJson": "[\"Mongolia\",\"Kazakhstan\",\"Kyrgyzstan\",\"Uzbekistan\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Kazakhstan's sky-blue flag features a golden steppe eagle soaring beneath a 32-ray sun."
+      }
+    ]
+  },
+  {
+    "id": "quiz_science_nature",
+    "title": "Science & Nature Quiz",
+    "slug": "science-quiz",
+    "description": "Explore the frontiers of physics, chemistry, astronomy, and evolutionary biology.",
+    "category": "SCIENCE",
+    "difficulty": "HARD",
+    "timeLimit": 20,
+    "thumbnail": "🔬",
+    "questions": [
+      {
+        "id": "q_sci_1",
+        "question": "What is the speed of light in a vacuum?",
+        "optionsJson": "[\"299,792 km/s\",\"150,000 km/s\",\"450,000 km/s\",\"199,792 km/s\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "Light travels at precisely 299,792,458 meters per second in a vacuum."
+      },
+      {
+        "id": "q_sci_2",
+        "question": "Which organelle is universally referred to as the powerhouse of the eukaryotic cell?",
+        "optionsJson": "[\"Nucleus\",\"Ribosome\",\"Mitochondria\",\"Golgi apparatus\"]",
+        "correctAnswer": 2,
+        "points": 10,
+        "explanation": "Mitochondria generate most of the chemical energy needed by cell biochemical reactions (ATP)."
+      },
+      {
+        "id": "q_sci_3",
+        "question": "What is the primary gas composing the atmosphere of Venus?",
+        "optionsJson": "[\"Nitrogen\",\"Carbon Dioxide\",\"Methane\",\"Oxygen\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "Venus's dense atmosphere is roughly 96.5% carbon dioxide, triggering extreme greenhouse warming."
+      }
+    ]
+  },
+  {
+    "id": "quiz_true_false",
+    "title": "True or False Fact Blitz",
+    "slug": "true-or-false",
+    "description": "Test your ability to discriminate verified scientific and historical facts from popular urban myths.",
+    "category": "TRIVIA",
+    "difficulty": "EASY",
+    "timeLimit": 15,
+    "thumbnail": "⚡",
+    "questions": [
+      {
+        "id": "q_tf_1",
+        "question": "Bananas are botanically classified as berries, while strawberries are not.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "True: Botanically, berries develop from a flower with a single ovary. Strawberries are aggregate fruits."
+      },
+      {
+        "id": "q_tf_2",
+        "question": "The Great Wall of China is easily visible from low Earth orbit with the naked human eye.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 1,
+        "points": 10,
+        "explanation": "False: Astronauts verify the Great Wall cannot be distinguished without high-magnification optical lenses."
+      },
+      {
+        "id": "q_tf_3",
+        "question": "Octopuses have three hearts and blue copper-based blood.",
+        "optionsJson": "[\"True\",\"False\"]",
+        "correctAnswer": 0,
+        "points": 10,
+        "explanation": "True: Two hearts pump blood to the gills, one to the body, and their blood uses copper-based hemocyanin."
+      }
+    ]
+  },
   {
     "id": "cmuz561cl000knei0vamw9wb9",
     "title": "Quick General Knowledge Blitz",
@@ -1259,6 +1584,78 @@ const quizzesData = [
 
 const achievementsData = [
   {
+    "id": "ach_dots_boxes",
+    "key": "DOTS_TACTICIAN",
+    "title": "Dots & Boxes Tactician",
+    "description": "Claim 10+ squares in a single Dots and Boxes strategy game",
+    "icon": "🔲",
+    "category": "GAMES",
+    "xpReward": 80
+  },
+  {
+    "id": "ach_nine_mens",
+    "key": "MILL_CONQUEROR",
+    "title": "Mill Conqueror",
+    "description": "Form 3 Mills in Nine Men's Morris and reach Phase 3 flying",
+    "icon": "⚔️",
+    "category": "GAMES",
+    "xpReward": 90
+  },
+  {
+    "id": "ach_whack_mole",
+    "key": "MOLE_SLAYER",
+    "title": "Mole Slayer",
+    "description": "Score over 300 points and chain a 5x combo in Whack-a-Mole Arcade",
+    "icon": "🔨",
+    "category": "GAMES",
+    "xpReward": 75
+  },
+  {
+    "id": "ach_sudoku",
+    "key": "SUDOKU_MASTER",
+    "title": "Sudoku Master",
+    "description": "Solve a 9x9 Sudoku puzzle with zero mistakes",
+    "icon": "🧩",
+    "category": "GAMES",
+    "xpReward": 100
+  },
+  {
+    "id": "ach_word_guess",
+    "key": "WORDLE_GENIUS",
+    "title": "Wordle Genius",
+    "description": "Deduce the secret 5-letter Daily Word in 3 guesses or fewer",
+    "icon": "🔤",
+    "category": "GAMES",
+    "xpReward": 100
+  },
+  {
+    "id": "ach_hangman",
+    "key": "HANGMAN_SURVIVOR",
+    "title": "Hangman Survivor",
+    "description": "Solve a Hangman mystery word with zero incorrect guesses",
+    "icon": "🎪",
+    "category": "GAMES",
+    "xpReward": 80
+  },
+  {
+    "id": "ach_geo_detective",
+    "key": "GEO_EXPLORER",
+    "title": "World Cartographer",
+    "description": "Identify 10 countries in Guess the Country without giving up",
+    "icon": "🌐",
+    "category": "QUIZZES",
+    "xpReward": 90
+  },
+  {
+    "id": "ach_fact_blitz",
+    "key": "FACT_CHECKER",
+    "title": "Fact Checker",
+    "description": "Reach an 8x streak in True or False Blitz",
+    "icon": "⚡",
+    "category": "QUIZZES",
+    "xpReward": 80
+  },
+  {
     "id": "cmuz561ij0027nei01rx1ra8y",
     "key": "FIRST_GAME",
     "title": "First Game Played",
@@ -2066,14 +2463,26 @@ async function main() {
   }
   console.log("Created " + usersData.length + " users.");
 
-  // 3. Seed Activities (Including Connect 4, Memory Game, Number Guess, etc.)
-  for (const act of activitiesData) {
+  // 3. Seed Activities (Including All 11 Master Games, Connect 4, Memory Game, etc.)
+  const seenSlugs = new Set<string>();
+  const uniqueActivities = activitiesData.filter((act) => {
+    if (seenSlugs.has(act.slug)) return false;
+    seenSlugs.add(act.slug);
+    return true;
+  });
+  for (const act of uniqueActivities) {
     await prisma.activity.create({ data: act });
   }
-  console.log("Created " + activitiesData.length + " activities.");
+  console.log("Created " + uniqueActivities.length + " activities.");
 
   // 4. Seed Quizzes and All Questions
-  for (const q of quizzesData) {
+  const seenQuizSlugs = new Set<string>();
+  const uniqueQuizzes = quizzesData.filter((q) => {
+    if (seenQuizSlugs.has(q.slug)) return false;
+    seenQuizSlugs.add(q.slug);
+    return true;
+  });
+  for (const q of uniqueQuizzes) {
     const { questions, ...quizFields } = q;
     await prisma.quiz.create({ data: quizFields });
     if (questions && questions.length > 0) {
@@ -2087,13 +2496,19 @@ async function main() {
       }
     }
   }
-  console.log("Created " + quizzesData.length + " quizzes with all questions.");
+  console.log("Created " + uniqueQuizzes.length + " quizzes with all questions.");
 
   // 5. Seed Achievements
-  for (const ach of achievementsData) {
+  const seenAchKeys = new Set<string>();
+  const uniqueAchievements = achievementsData.filter((ach) => {
+    if (seenAchKeys.has(ach.key)) return false;
+    seenAchKeys.add(ach.key);
+    return true;
+  });
+  for (const ach of uniqueAchievements) {
     await prisma.achievement.create({ data: ach });
   }
-  console.log("Created " + achievementsData.length + " achievements.");
+  console.log("Created " + uniqueAchievements.length + " achievements.");
 
   // 6. Seed User Achievements
   for (const ua of userAchievementsData) {
