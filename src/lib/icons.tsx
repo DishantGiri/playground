@@ -31,6 +31,14 @@ import {
   CircleDot,
 } from "lucide-react";
 
+export const GAME_CARD_IMAGES: Record<string, string> = {
+  "number-guess": "/images/number-guess.png",
+  "memory-game": "/images/memory-match.png",
+  "memory-duel": "/images/memory-match.png",
+  "connect-4": "/images/connect-four.png",
+  "connect-four": "/images/connect-four.png",
+};
+
 export function getActivityIcon(slug: string, className = "w-6 h-6") {
   switch (slug) {
     case "connect-4":
