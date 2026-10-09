@@ -99,11 +99,12 @@ export function Navbar() {
             <span className="sm:hidden">Exit</span>
           </Link>
           <div className="h-4 w-px bg-[#E8E8E5] hidden sm:block" />
-          <Link href="/" className="flex items-center gap-1.5 font-bold text-sm text-[#202124] hover:text-[#F97316] transition-colors">
-            <span className="w-6 h-6 rounded-lg bg-[#F97316] text-white flex items-center justify-center text-xs font-black">
-              B
-            </span>
-            <span className="tracking-tight">Bored<span className="text-[#F97316]">.</span></span>
+          <Link href="/" className="flex items-center hover:opacity-90 transition-opacity" aria-label="Bored Home">
+            <img
+              src="/logo.png"
+              alt="Bored"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
         </div>
 
@@ -139,18 +140,12 @@ export function Navbar() {
         
         {/* Left: Brand Logo */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-[#F97316] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-              <Gamepad2 className="w-5 h-5 text-white group-hover:rotate-6 transition-transform" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-black tracking-tight text-[#202124] flex items-center leading-none">
-                BORED<span className="text-[#F97316]">.</span>
-              </span>
-              <span className="text-[10px] font-semibold text-[#6B7280] tracking-wide mt-0.5">
-                Play & Relax
-              </span>
-            </div>
+          <Link href="/" className="flex items-center group py-0.5" aria-label="Bored - Play & Relax">
+            <img
+              src="/logo.png"
+              alt="Bored - Play & Relax"
+              className="h-10 sm:h-11 w-auto object-contain group-hover:scale-105 transition-transform"
+            />
           </Link>
         </div>
 
