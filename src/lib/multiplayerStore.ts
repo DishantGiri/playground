@@ -451,7 +451,7 @@ export function createRoom(
   return { room, playerToken };
 }
 
-export function listOpenRooms(): {
+export function listOpenRooms(filterGameType?: MultiplayerGameType): {
   code: string;
   gameType: MultiplayerGameType;
   hostName: string;
@@ -469,6 +469,9 @@ export function listOpenRooms(): {
 
   for (const room of rooms.values()) {
     if (room.status === "waiting" && room.isPublic !== false && room.players.length === 1) {
+      if (filterGameType && room.gameType !== filterGameType) {
+        continue;
+      }
       openRooms.push({
         code: room.code,
         gameType: room.gameType,
@@ -480,6 +483,46 @@ export function listOpenRooms(): {
   }
 
   return openRooms.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export function matchmakeRoom(
+  gameType: MultiplayerGameType,
+  playerName: string
+): {
+  matched: boolean;
+  room: MultiplayerRoom;
+  playerToken: string;
+  playerNumber: 1 | 2;
+} {
+  pruneStaleRooms();
+  // 1. Search for waiting room of THIS SPECIFIC GAME ONLY
+  for (const room of rooms.values()) {
+    if (
+      room.gameType === gameType &&
+      room.status === "waiting" &&
+      room.isPublic !== false &&
+      room.players.length === 1
+    ) {
+      const joinResult = joinRoom(room.code, playerName);
+      if (joinResult.success && joinResult.room && joinResult.playerToken) {
+        return {
+          matched: true,
+          room: joinResult.room,
+          playerToken: joinResult.playerToken,
+          playerNumber: 2,
+        };
+      }
+    }
+  }
+
+  // 2. No open room waiting for this game: create a public room for this game
+  const createResult = createRoom(gameType, playerName, undefined, { isPublic: true });
+  return {
+    matched: false,
+    room: createResult.room,
+    playerToken: createResult.playerToken,
+    playerNumber: 1,
+  };
 }
 
 export function joinRoom(
@@ -604,22 +647,28 @@ export function handleRoomAction(
   room.lastActivity = Date.now();
   player.lastSeen = Date.now();
 
-  // 1. Quick Chat / Reaction message
-  if (action === "send_message") {
+  // 1. Temporary In-Game Chat message (ephemeral, in-memory only)
+  if (action === "send_message" || action === "send_chat") {
     const text = String(payload?.text || "").trim();
     if (text) {
       const msg: QuickMessage = {
         id: "msg_" + Math.random().toString(36).substring(2, 8),
         sender: player.playerNumber,
         senderName: player.name,
-        text: text.slice(0, 60),
+        text: text.slice(0, 160),
         timestamp: Date.now(),
       };
       room.messages.push(msg);
-      if (room.messages.length > 15) {
+      // Keep up to 40 temporary messages in active session
+      if (room.messages.length > 40) {
         room.messages.shift();
       }
     }
+    return { success: true, room };
+  }
+
+  if (action === "clear_chat") {
+    room.messages = [];
     return { success: true, room };
   }
 

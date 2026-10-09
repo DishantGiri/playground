@@ -36,10 +36,11 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
   const mode = searchParams.get("mode");
+  const gameType = searchParams.get("gameType") as MultiplayerGameType | null;
 
-  // Mode "open" or no code returns all open public waiting rooms
+  // Mode "open" or no code returns open public waiting rooms (optionally filtered by specific gameType)
   if (mode === "open" || !code) {
-    const openRooms = listOpenRooms();
+    const openRooms = listOpenRooms(gameType || undefined);
     return NextResponse.json({
       success: true,
       rooms: openRooms,
