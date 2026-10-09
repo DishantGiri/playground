@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Glow -->
+    <radialGradient id="dilemmaGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#EEF2FF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFF7ED" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Card A (Indigo / Purple) -->
+    <linearGradient id="cardAGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+
+    <!-- Card B (Orange / Coral) -->
+    <linearGradient id="cardBGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="50%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+
+    <!-- VS Badge Gradient -->
+    <linearGradient id="vsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#4338CA" flood-opacity="0.2"/>
+    </filter>
+    <filter id="vsShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#D97706" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Glow -->
+  <circle cx="256" cy="256" r="220" fill="url(#dilemmaGlow)"/>
+
+  <!-- Choice Card A (Left - Rotated) -->
+  <g transform="translate(170, 260) rotate(-14) translate(-100, -140)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="180" height="240" rx="28" fill="#FFFFFF" stroke="#E0E7FF" stroke-width="4"/>
+    <rect x="12" y="12" width="156" height="216" rx="20" fill="url(#cardAGrad)"/>
+    
+    <!-- Option A Badge -->
+    <rect x="45" y="32" width="90" height="32" rx="16" fill="#FFFFFF" opacity="0.25"/>
+    <text x="90" y="54" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">OPTION</text>
+    
+    <!-- Big 'A' Letter -->
+    <text x="90" y="152" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="82" fill="#FFFFFF" text-anchor="middle">A</text>
+    
+    <!-- Bottom Sparkle dots -->
+    <circle cx="65" cy="195" r="5" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="90" cy="195" r="7" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="115" cy="195" r="5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+
+  <!-- Choice Card B (Right - Rotated) -->
+  <g transform="translate(342, 260) rotate(14) translate(-80, -140)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="180" height="240" rx="28" fill="#FFFFFF" stroke="#FFEDD5" stroke-width="4"/>
+    <rect x="12" y="12" width="156" height="216" rx="20" fill="url(#cardBGrad)"/>
+    
+    <!-- Option B Badge -->
+    <rect x="45" y="32" width="90" height="32" rx="16" fill="#FFFFFF" opacity="0.25"/>
+    <text x="90" y="54" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">OPTION</text>
+    
+    <!-- Big 'B' Letter -->
+    <text x="90" y="152" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="82" fill="#FFFFFF" text-anchor="middle">B</text>
+    
+    <!-- Bottom Sparkle dots -->
+    <circle cx="65" cy="195" r="5" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="90" cy="195" r="7" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="115" cy="195" r="5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+
+  <!-- Central "VS" Golden Badge -->
+  <g transform="translate(256, 256)" filter="url(#vsShadow)">
+    <circle cx="0" cy="0" r="48" fill="#FFFFFF" stroke="#FDE047" stroke-width="4"/>
+    <circle cx="0" cy="0" r="40" fill="url(#vsGrad)"/>
+    <text x="0" y="11" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="34" fill="#78350F" text-anchor="middle" letter-spacing="-1">VS</text>
+  </g>
+
+  <!-- Playful Floating Question Marks & Sparkles -->
+  <g fill="#6366F1">
+    <text x="90" y="110" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="38" opacity="0.6">?</text>
+  </g>
+  <g fill="#F97316">
+    <text x="400" y="110" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="38" opacity="0.6">?</text>
+  </g>
+  <g fill="#FBBF24">
+    <path d="M 256 90 Q 256 104 242 104 Q 256 104 256 118 Q 256 104 270 104 Q 256 104 256 90 Z"/>
+    <path d="M 120 380 Q 120 392 110 392 Q 120 392 120 404 Q 120 392 130 392 Q 120 392 120 380 Z"/>
+    <path d="M 390 380 Q 390 392 380 392 Q 390 392 390 404 Q 390 392 400 392 Q 390 392 390 380 Z"/>
+  </g>
+</svg>

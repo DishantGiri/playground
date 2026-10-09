@@ -148,7 +148,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       btnColor: "bg-[#F97316] hover:bg-[#EA580C] text-white",
       bgGradient: "bg-gradient-to-br from-[#EEF2FF] via-white to-[#FFF7ED]",
       border: "border-[#E8E8E5]",
-      image: "/images/hero-mascot.jpg",
+      image: "/images/connect-4.png",
       iconSlug: "connect-4",
     },
     {
@@ -172,7 +172,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       btnColor: "bg-[#F97316] hover:bg-[#EA580C] text-white",
       bgGradient: "bg-gradient-to-br from-[#F0FDF4] via-white to-[#FFF7ED]",
       border: "border-[#E8E8E5]",
-      image: "/images/lightning-card.png",
+      image: "/images/reaction-test.svg",
       iconSlug: "reaction-test",
     },
   ];
@@ -184,7 +184,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       title: "Number Guess",
       category: "Deduction",
       players: "45k",
-      image: "/images/diamond-card.png",
+      image: "/images/number-guess.png",
       tag: "HOT",
     },
     {
@@ -192,7 +192,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       title: "Typing Sprint",
       category: "Keyboard",
       players: "62k",
-      image: "/images/rocket-card.png",
+      image: "/images/typing-sprint.png",
       tag: "SPEED",
     },
     {
@@ -200,7 +200,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       title: "Connect 4",
       category: "Tactical",
       players: "152k",
-      image: "/images/burger-card.png",
+      image: "/images/connect-4.png",
       tag: "1v1 DUEL",
     },
     {
@@ -216,7 +216,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       title: "Reflex Tap",
       category: "Reflex",
       players: "114k",
-      image: "/images/lightning-card.png",
+      image: "/images/reaction-test.svg",
       tag: "INSTANT",
     },
     {
@@ -224,7 +224,7 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
       title: "Dilemmas",
       category: "Casual",
       players: "38k",
-      image: "/images/panda-card.png",
+      image: "/images/would-you-rather.svg",
       tag: "CHOICE",
     },
   ];
@@ -388,8 +388,12 @@ export function GamingDashboard({ activities, topUsers, dailyChallenge }: Props)
 
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-white border border-[#E8E8E5] flex items-center justify-center shadow-2xs">
-                  {getActivityIcon(game.iconSlug, "w-5 h-5")}
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#E8E8E5] flex items-center justify-center shadow-2xs overflow-hidden p-1">
+                  {game.image ? (
+                    <img src={game.image} alt={game.title} className="w-full h-full object-contain" />
+                  ) : (
+                    getActivityIcon(game.iconSlug, "w-5 h-5")
+                  )}
                 </div>
 
                 <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shadow-2xs ${game.badgeColor}`}>

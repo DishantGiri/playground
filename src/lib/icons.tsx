@@ -33,10 +33,13 @@ import {
 
 export const GAME_CARD_IMAGES: Record<string, string> = {
   "number-guess": "/images/number-guess.png",
-  "memory-game": "/images/memory-match.png",
-  "memory-duel": "/images/memory-match.png",
-  "connect-4": "/images/connect-four.png",
-  "connect-four": "/images/connect-four.png",
+  "typing-test": "/images/typing-sprint.png",
+  "connect-4": "/images/connect-4.png",
+  "connect-four": "/images/connect-4.png",
+  "memory-game": "/images/fox-card.png",
+  "memory-duel": "/images/fox-card.png",
+  "reaction-test": "/images/reaction-test.svg",
+  "would-you-rather": "/images/would-you-rather.svg",
 };
 
 export function getActivityIcon(slug: string, className = "w-6 h-6") {
