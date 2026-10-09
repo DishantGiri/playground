@@ -12,8 +12,10 @@ import {
   Sword,
   CheckCircle2,
   AlertCircle,
+  Wifi,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
+import { MultiplayerLobby } from "@/components/multiplayer/MultiplayerLobby";
 
 interface Props {
   activitySlug?: string;
@@ -21,7 +23,7 @@ interface Props {
 
 type Player = 1 | 2; // 1: Blue/Cyan, 2: Orange/Red (or AI)
 type Phase = 1 | 2 | 3; // 1: Placing, 2: Moving, 3: Flying (at 3 pieces)
-type GameMode = "pvp" | "ai";
+type GameMode = "pvp" | "ai" | "online";
 
 // 24 Board Points Coordinates (SVG viewBox 0 0 400 400)
 const POINTS = [
@@ -503,6 +505,29 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
     turn,
   ]);
 
+  if (mode === "online") {
+    return (
+      <div className="w-full space-y-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setMode("ai");
+            }}
+            className="text-xs font-bold text-[#6B7280] hover:text-[#202124] flex items-center gap-1.5 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Back to Solo / Same-Device</span>
+          </button>
+          <span className="text-[10px] uppercase font-bold tracking-wider text-[#6366F1] bg-[#EEF2FF] px-2.5 py-0.5 rounded-full border border-[#C7D2FE]">
+            Online Nine Men&apos;s Morris Duel
+          </span>
+        </div>
+        <MultiplayerLobby defaultGameType="nine-mens-morris" />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-4 select-none">
       {/* Top Header Bar */}
@@ -535,6 +560,16 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
           >
             <Users className="w-3.5 h-3.5" />
             <span>2 Player</span>
+          </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setMode("online");
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#EEF2FF] text-[#6366F1] hover:bg-[#E0E7FF] border border-[#C7D2FE] cursor-pointer"
+          >
+            <Wifi className="w-3.5 h-3.5" />
+            <span>2 Devices (Live)</span>
           </button>
         </div>
 
