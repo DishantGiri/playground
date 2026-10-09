@@ -1,7 +1,14 @@
 // Server-side in-memory store for cross-device multiplayer games
 // Attached to globalThis to persist across hot reloads in Next.js development
 
-export type MultiplayerGameType = "number-guess" | "tic-tac-toe" | "reaction-duel" | "connect-4" | "memory-duel";
+export type MultiplayerGameType =
+  | "dots-and-boxes"
+  | "nine-mens-morris"
+  | "connect-4"
+  | "memory-duel"
+  | "tic-tac-toe"
+  | "reaction-duel"
+  | "number-guess";
 
 export interface Player {
   id: string; // unique token for the player
@@ -75,6 +82,38 @@ export interface ReactionDuelState {
   roundWinner: 1 | 2 | "draw" | null;
 }
 
+export interface DotsAndBoxesState {
+  gridSize: number; // 3, 4, 5
+  edges: string[]; // ["h-0-0", "v-1-2", ...]
+  boxes: Record<string, 1 | 2>; // "r-c": 1 | 2
+  currentTurn: 1 | 2;
+  p1Score: number;
+  p2Score: number;
+  lastEdge: string | null;
+}
+
+export interface NineMensMorrisState {
+  board: (1 | 2 | null)[]; // 24 spots
+  p1Hand: number;
+  p2Hand: number;
+  p1Alive: number;
+  p2Alive: number;
+  currentTurn: 1 | 2;
+  phase: "place" | "move" | "fly";
+  millToClaim: boolean;
+  flyAllowed: boolean;
+}
+
+export interface CustomRoomOptions {
+  isPublic?: boolean;
+  timerSeconds?: number;
+  dotsGridSize?: number;
+  memoryGridSize?: string;
+  morrisFlyAllowed?: boolean;
+  reactionTargetScore?: number;
+  numberGuessMaxAttempts?: number;
+}
+
 export interface QuickMessage {
   id: string;
   sender: 1 | 2;
@@ -94,6 +133,8 @@ export interface MultiplayerRoom {
   winner: 1 | 2 | "draw" | null;
   winReason?: string;
   startingPlayer: 1 | 2;
+  isPublic: boolean;
+  customOptions?: CustomRoomOptions;
 
   // Game specific state
   numberGuess?: NumberGuessState;
@@ -101,8 +142,77 @@ export interface MultiplayerRoom {
   reactionDuel?: ReactionDuelState;
   connectFour?: ConnectFourState;
   memoryDuel?: MemoryDuelState;
+  dotsAndBoxes?: DotsAndBoxesState;
+  nineMensMorris?: NineMensMorrisState;
 
   messages: QuickMessage[];
+}
+
+export const MORRIS_ADJACENCY: Record<number, number[]> = {
+  0: [1, 7],
+  1: [0, 2, 9],
+  2: [1, 3],
+  3: [2, 4, 11],
+  4: [3, 5],
+  5: [4, 6, 13],
+  6: [5, 7],
+  7: [0, 6, 15],
+
+  8: [9, 15],
+  9: [1, 8, 10, 17],
+  10: [9, 11],
+  11: [3, 10, 12, 19],
+  12: [11, 13],
+  13: [5, 12, 14, 21],
+  14: [13, 15],
+  15: [7, 8, 14, 23],
+
+  16: [17, 23],
+  17: [9, 16, 18],
+  18: [17, 19],
+  19: [11, 18, 20],
+  20: [19, 21],
+  21: [13, 20, 22],
+  22: [21, 23],
+  23: [15, 16, 22],
+};
+
+export const MORRIS_MILLS: number[][] = [
+  // Outer square
+  [0, 1, 2],
+  [2, 3, 4],
+  [4, 5, 6],
+  [6, 7, 0],
+  // Middle square
+  [8, 9, 10],
+  [10, 11, 12],
+  [12, 13, 14],
+  [14, 15, 8],
+  // Inner square
+  [16, 17, 18],
+  [18, 19, 20],
+  [20, 21, 22],
+  [22, 23, 16],
+  // Cross bridges
+  [1, 9, 17],
+  [3, 11, 19],
+  [5, 13, 21],
+  [7, 15, 23],
+];
+
+export function checkMorrisMillFormed(board: (1 | 2 | null)[], pos: number, player: 1 | 2): boolean {
+  for (const mill of MORRIS_MILLS) {
+    if (mill.includes(pos)) {
+      if (mill.every((p) => board[p] === player)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function isPartOfAnyMill(board: (1 | 2 | null)[], pos: number, player: 1 | 2): boolean {
+  return checkMorrisMillFormed(board, pos, player);
 }
 
 declare global {
@@ -141,14 +251,14 @@ function pruneStaleRooms() {
 function initGameState(
   gameType: MultiplayerGameType,
   startingPlayer: 1 | 2 = 1,
-  config?: { gridSize?: string }
+  config?: CustomRoomOptions
 ) {
   const state: Partial<MultiplayerRoom> = {};
 
   if (gameType === "number-guess") {
     state.numberGuess = {
       targetNumber: Math.floor(Math.random() * 100) + 1,
-      maxAttemptsPerPlayer: 5,
+      maxAttemptsPerPlayer: config?.numberGuessMaxAttempts || 5,
       history: [],
       currentTurn: startingPlayer,
       p1Attempts: 0,
@@ -163,7 +273,7 @@ function initGameState(
   } else if (gameType === "reaction-duel") {
     state.reactionDuel = {
       round: 1,
-      targetScore: 3,
+      targetScore: config?.reactionTargetScore || 3,
       phase: "waiting",
       goTimestamp: null,
       scheduledGoTime: null,
@@ -179,9 +289,16 @@ function initGameState(
       lastMove: null,
     };
   } else if (gameType === "memory-duel") {
-    const size = "4x6";
-    const cols = 6;
-    const pairs = 12;
+    const size = config?.memoryGridSize || "4x6";
+    let pairs = 12;
+    let cols = 6;
+    if (size === "3x4") {
+      pairs = 6;
+      cols = 4;
+    } else if (size === "4x4") {
+      pairs = 8;
+      cols = 4;
+    }
 
     state.memoryDuel = {
       cards: generateMemoryCards(pairs, size),
@@ -193,6 +310,29 @@ function initGameState(
       totalPairs: pairs,
       cols,
       gridSize: size,
+    };
+  } else if (gameType === "dots-and-boxes") {
+    const gridSize = config?.dotsGridSize || 3;
+    state.dotsAndBoxes = {
+      gridSize,
+      edges: [],
+      boxes: {},
+      currentTurn: startingPlayer,
+      p1Score: 0,
+      p2Score: 0,
+      lastEdge: null,
+    };
+  } else if (gameType === "nine-mens-morris") {
+    state.nineMensMorris = {
+      board: Array(24).fill(null),
+      p1Hand: 9,
+      p2Hand: 9,
+      p1Alive: 0,
+      p2Alive: 0,
+      currentTurn: startingPlayer,
+      phase: "place",
+      millToClaim: false,
+      flyAllowed: config?.morrisFlyAllowed ?? true,
     };
   }
 
@@ -241,9 +381,8 @@ export const RICH_MEMORY_ITEMS = [
 ];
 
 export function generateMemoryCards(pairCount = 12, gridSize = "4x6"): MemoryCardItem[] {
-  // 4x6 Grid: 24 cards (4 rows x 6 columns)
-  // Exactly 12 matching pairs (24 cards) selected randomly from available CARD_IMAGE_ITEMS (16 total)
-  const chosen = [...CARD_IMAGE_ITEMS].sort(() => Math.random() - 0.5).slice(0, 12);
+  const count = Math.min(pairCount, CARD_IMAGE_ITEMS.length);
+  const chosen = [...CARD_IMAGE_ITEMS].sort(() => Math.random() - 0.5).slice(0, count);
   const deck: MemoryCardItem[] = [];
   let idCounter = 1;
 
@@ -252,7 +391,7 @@ export function generateMemoryCards(pairCount = 12, gridSize = "4x6"): MemoryCar
     deck.push({ id: idCounter++, iconKey: c.key, image: c.image, matched: false });
   });
 
-  // Fisher-Yates shuffle ALL 24 cards across the 4x6 board
+  // Fisher-Yates shuffle
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -265,12 +404,19 @@ export function createRoom(
   gameType: MultiplayerGameType,
   hostName: string,
   preferredCode?: string,
-  config?: { gridSize?: string }
+  customOptions?: CustomRoomOptions
 ): { room: MultiplayerRoom; playerToken: string } {
   pruneStaleRooms();
 
-  let code = preferredCode ? preferredCode.trim().toUpperCase() : generateRoomCode();
-  if (rooms.has(code)) {
+  let code = "";
+  if (preferredCode && preferredCode.trim().length >= 3) {
+    const sanitized = preferredCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+    if (sanitized.length >= 3 && !rooms.has(sanitized)) {
+      code = sanitized;
+    }
+  }
+
+  if (!code) {
     code = generateRoomCode();
   }
 
@@ -283,7 +429,7 @@ export function createRoom(
     lastSeen: Date.now(),
   };
 
-  const initialGameData = initGameState(gameType, 1, config);
+  const initialGameData = initGameState(gameType, 1, customOptions);
 
   const room: MultiplayerRoom = {
     code,
@@ -295,12 +441,45 @@ export function createRoom(
     scores: { p1: 0, p2: 0 },
     winner: null,
     startingPlayer: 1,
+    isPublic: customOptions?.isPublic ?? true,
+    customOptions,
     messages: [],
     ...initialGameData,
   };
 
   rooms.set(code, room);
   return { room, playerToken };
+}
+
+export function listOpenRooms(): {
+  code: string;
+  gameType: MultiplayerGameType;
+  hostName: string;
+  createdAt: number;
+  customOptions?: CustomRoomOptions;
+}[] {
+  pruneStaleRooms();
+  const openRooms: {
+    code: string;
+    gameType: MultiplayerGameType;
+    hostName: string;
+    createdAt: number;
+    customOptions?: CustomRoomOptions;
+  }[] = [];
+
+  for (const room of rooms.values()) {
+    if (room.status === "waiting" && room.isPublic !== false && room.players.length === 1) {
+      openRooms.push({
+        code: room.code,
+        gameType: room.gameType,
+        hostName: room.players[0]?.name || "Host",
+        createdAt: room.createdAt,
+        customOptions: room.customOptions,
+      });
+    }
+  }
+
+  return openRooms.sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export function joinRoom(
@@ -451,7 +630,7 @@ export function handleRoomAction(
     room.status = "playing";
     room.startingPlayer = room.startingPlayer === 1 ? 2 : 1;
 
-    const config = room.gameType === "memory-duel" && room.memoryDuel ? { gridSize: room.memoryDuel.gridSize } : undefined;
+    const config = room.customOptions;
     const newGame = initGameState(room.gameType, room.startingPlayer, config);
     Object.assign(room, newGame);
 
@@ -773,6 +952,255 @@ export function handleRoomAction(
 
     if (action === "clear_flips") {
       state.flippedIndices = [];
+      return { success: true, room };
+    }
+  }
+
+  // 8. Dots and Boxes Action
+  if (room.gameType === "dots-and-boxes" && action === "claim_edge") {
+    const state = room.dotsAndBoxes;
+    if (!state) return { success: false, error: "Game not initialized" };
+    if (room.status !== "playing") return { success: false, error: "Game is not active" };
+
+    if (state.currentTurn !== player.playerNumber) {
+      return { success: false, error: "It is not your turn!" };
+    }
+
+    const edgeKey = String(payload?.edge || "").trim();
+    if (!edgeKey || state.edges.includes(edgeKey)) {
+      return { success: false, error: "Edge already claimed or invalid" };
+    }
+
+    state.edges.push(edgeKey);
+    state.lastEdge = edgeKey;
+
+    const edgesSet = new Set(state.edges);
+    const gSize = state.gridSize;
+    let boxesCompletedThisTurn = 0;
+
+    for (let r = 0; r < gSize - 1; r++) {
+      for (let c = 0; c < gSize - 1; c++) {
+        const boxKey = `${r}-${c}`;
+        if (state.boxes[boxKey]) continue;
+
+        const top = `h-${r}-${c}`;
+        const bottom = `h-${r + 1}-${c}`;
+        const left = `v-${r}-${c}`;
+        const right = `v-${r}-${c + 1}`;
+
+        if (
+          edgesSet.has(top) &&
+          edgesSet.has(bottom) &&
+          edgesSet.has(left) &&
+          edgesSet.has(right)
+        ) {
+          state.boxes[boxKey] = player.playerNumber;
+          boxesCompletedThisTurn++;
+          if (player.playerNumber === 1) {
+            state.p1Score++;
+          } else {
+            state.p2Score++;
+          }
+        }
+      }
+    }
+
+    const totalPossibleBoxes = (gSize - 1) * (gSize - 1);
+    const totalClaimedBoxes = Object.keys(state.boxes).length;
+
+    if (totalClaimedBoxes >= totalPossibleBoxes) {
+      room.status = "finished";
+      room.scores.p1 = state.p1Score;
+      room.scores.p2 = state.p2Score;
+
+      if (state.p1Score > state.p2Score) {
+        room.winner = 1;
+        room.winReason = `${room.players[0]?.name || "Player 1"} won with ${state.p1Score} squares!`;
+      } else if (state.p2Score > state.p1Score) {
+        room.winner = 2;
+        room.winReason = `${room.players[1]?.name || "Player 2"} won with ${state.p2Score} squares!`;
+      } else {
+        room.winner = "draw";
+        room.winReason = `Draw match! Tied at ${state.p1Score} squares each.`;
+      }
+    } else {
+      if (boxesCompletedThisTurn === 0) {
+        state.currentTurn = state.currentTurn === 1 ? 2 : 1;
+      }
+    }
+
+    return { success: true, room };
+  }
+
+  // 9. Nine Men's Morris Actions
+  if (room.gameType === "nine-mens-morris") {
+    const state = room.nineMensMorris;
+    if (!state) return { success: false, error: "Game not initialized" };
+    if (room.status !== "playing") return { success: false, error: "Game is not active" };
+
+    if (state.currentTurn !== player.playerNumber) {
+      return { success: false, error: "It is not your turn!" };
+    }
+
+    // A. Remove Piece (when mill was formed)
+    if (action === "remove_piece") {
+      if (!state.millToClaim) {
+        return { success: false, error: "No mill has been formed to claim!" };
+      }
+
+      const pos = Number(payload?.pos);
+      if (isNaN(pos) || pos < 0 || pos >= 24) {
+        return { success: false, error: "Invalid board position" };
+      }
+
+      const opponentNum = player.playerNumber === 1 ? 2 : 1;
+      if (state.board[pos] !== opponentNum) {
+        return { success: false, error: "You can only remove an opponent's piece!" };
+      }
+
+      const opponentPieces = state.board
+        .map((p, idx) => (p === opponentNum ? idx : -1))
+        .filter((idx) => idx !== -1);
+      const nonMillOpponentPieces = opponentPieces.filter(
+        (idx) => !isPartOfAnyMill(state.board, idx, opponentNum)
+      );
+
+      if (nonMillOpponentPieces.length > 0 && isPartOfAnyMill(state.board, pos, opponentNum)) {
+        return { success: false, error: "Cannot remove a piece that is part of a mill unless no other pieces are available!" };
+      }
+
+      state.board[pos] = null;
+      if (opponentNum === 1) state.p1Alive--;
+      else state.p2Alive--;
+      state.millToClaim = false;
+
+      // Check victory
+      if (state.p1Hand === 0 && state.p2Hand === 0 && (opponentNum === 1 ? state.p1Alive : state.p2Alive) < 3) {
+        room.status = "finished";
+        room.winner = player.playerNumber;
+        room.scores[player.playerNumber === 1 ? "p1" : "p2"] += 1;
+        room.winReason = `${player.name} reduced opponent to 2 pieces!`;
+        return { success: true, room };
+      }
+
+      if (state.phase === "place" && state.p1Hand === 0 && state.p2Hand === 0) {
+        state.phase = "move";
+      }
+
+      state.currentTurn = opponentNum;
+
+      if (state.phase !== "place") {
+        const oppAlive = opponentNum === 1 ? state.p1Alive : state.p2Alive;
+        const oppCanFly = oppAlive === 3 && state.flyAllowed;
+        if (!oppCanFly) {
+          const hasLegalMove = state.board.some((p, from) => {
+            if (p !== opponentNum) return false;
+            const neighbors = MORRIS_ADJACENCY[from] || [];
+            return neighbors.some((to) => state.board[to] === null);
+          });
+
+          if (!hasLegalMove) {
+            room.status = "finished";
+            room.winner = player.playerNumber;
+            room.scores[player.playerNumber === 1 ? "p1" : "p2"] += 1;
+            room.winReason = `${player.name} trapped all of opponent's pieces!`;
+            return { success: true, room };
+          }
+        }
+      }
+
+      return { success: true, room };
+    }
+
+    // B. Place Piece (Phase 1)
+    if (action === "place_piece") {
+      if (state.phase !== "place" || state.millToClaim) {
+        return { success: false, error: "Cannot place pieces right now" };
+      }
+
+      const pos = Number(payload?.pos);
+      if (isNaN(pos) || pos < 0 || pos >= 24 || state.board[pos] !== null) {
+        return { success: false, error: "Invalid placement position" };
+      }
+
+      state.board[pos] = player.playerNumber;
+      if (player.playerNumber === 1) {
+        state.p1Hand--;
+        state.p1Alive++;
+      } else {
+        state.p2Hand--;
+        state.p2Alive++;
+      }
+
+      if (checkMorrisMillFormed(state.board, pos, player.playerNumber)) {
+        state.millToClaim = true;
+        return { success: true, room };
+      }
+
+      if (state.p1Hand === 0 && state.p2Hand === 0) {
+        state.phase = "move";
+      }
+
+      state.currentTurn = player.playerNumber === 1 ? 2 : 1;
+      return { success: true, room };
+    }
+
+    // C. Move Piece (Phase 2 & 3)
+    if (action === "move_piece") {
+      if (state.phase === "place" || state.millToClaim) {
+        return { success: false, error: "Cannot move pieces right now" };
+      }
+
+      const from = Number(payload?.from);
+      const to = Number(payload?.to);
+
+      if (isNaN(from) || isNaN(to) || from < 0 || from >= 24 || to < 0 || to >= 24) {
+        return { success: false, error: "Invalid move coordinates" };
+      }
+
+      if (state.board[from] !== player.playerNumber || state.board[to] !== null) {
+        return { success: false, error: "Illegal move destination" };
+      }
+
+      const myAlive = player.playerNumber === 1 ? state.p1Alive : state.p2Alive;
+      const canFly = myAlive === 3 && state.flyAllowed;
+
+      if (!canFly) {
+        const neighbors = MORRIS_ADJACENCY[from] || [];
+        if (!neighbors.includes(to)) {
+          return { success: false, error: "Destination is not adjacent to source!" };
+        }
+      }
+
+      state.board[from] = null;
+      state.board[to] = player.playerNumber;
+
+      if (checkMorrisMillFormed(state.board, to, player.playerNumber)) {
+        state.millToClaim = true;
+        return { success: true, room };
+      }
+
+      const nextPlayer = player.playerNumber === 1 ? 2 : 1;
+      state.currentTurn = nextPlayer;
+
+      const oppAlive = nextPlayer === 1 ? state.p1Alive : state.p2Alive;
+      const oppCanFly = oppAlive === 3 && state.flyAllowed;
+      if (!oppCanFly) {
+        const hasLegalMove = state.board.some((p, f) => {
+          if (p !== nextPlayer) return false;
+          const neighbors = MORRIS_ADJACENCY[f] || [];
+          return neighbors.some((t) => state.board[t] === null);
+        });
+
+        if (!hasLegalMove) {
+          room.status = "finished";
+          room.winner = player.playerNumber;
+          room.scores[player.playerNumber === 1 ? "p1" : "p2"] += 1;
+          room.winReason = `${player.name} trapped all of opponent's pieces!`;
+          return { success: true, room };
+        }
+      }
+
       return { success: true, room };
     }
   }

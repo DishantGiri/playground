@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { createRoom, getRoom, MultiplayerGameType } from "@/lib/multiplayerStore";
+import {
+  createRoom,
+  getRoom,
+  listOpenRooms,
+  MultiplayerGameType,
+  CustomRoomOptions,
+} from "@/lib/multiplayerStore";
 
 export async function POST(req: Request) {
   try {
@@ -7,9 +13,9 @@ export async function POST(req: Request) {
     const gameType: MultiplayerGameType = body.gameType || "number-guess";
     const hostName: string = body.playerName || "Player 1";
     const customCode: string | undefined = body.preferredCode;
-    const config = body.config;
+    const customOptions: CustomRoomOptions | undefined = body.customOptions || body.config;
 
-    const { room, playerToken } = createRoom(gameType, hostName, customCode, config);
+    const { room, playerToken } = createRoom(gameType, hostName, customCode, customOptions);
 
     return NextResponse.json({
       success: true,
@@ -29,9 +35,15 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
+  const mode = searchParams.get("mode");
 
-  if (!code) {
-    return NextResponse.json({ error: "Room code required" }, { status: 400 });
+  // Mode "open" or no code returns all open public waiting rooms
+  if (mode === "open" || !code) {
+    const openRooms = listOpenRooms();
+    return NextResponse.json({
+      success: true,
+      rooms: openRooms,
+    });
   }
 
   const { room, error } = getRoom(code);
@@ -44,5 +56,7 @@ export async function GET(req: Request) {
     gameType: room.gameType,
     status: room.status,
     playerCount: room.players.length,
+    isPublic: room.isPublic,
+    customOptions: room.customOptions,
   });
 }

@@ -15,8 +15,10 @@ import {
   Play,
   Award,
   Zap,
+  Wifi,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
+import { MultiplayerLobby } from "@/components/multiplayer/MultiplayerLobby";
 
 interface Props {
   activitySlug?: string;
@@ -24,7 +26,7 @@ interface Props {
 
 type GridSize = 3 | 4 | 5; // 3x3 dots = 2x2 boxes, 4x4 dots = 3x3 boxes, 5x5 dots = 4x4 boxes
 type Player = 1 | 2; // 1: Player 1 (Indigo/Blue), 2: Player 2 / AI (Orange/Red)
-type GameMode = "pvp" | "ai";
+type GameMode = "pvp" | "ai" | "online";
 type AIDifficulty = "easy" | "medium" | "hard";
 
 interface Edge {
@@ -282,6 +284,29 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
     return () => clearTimeout(timer);
   }, [difficulty, gameOver, gridSize, hEdges, makeMove, mode, turn, vEdges]);
 
+  if (mode === "online") {
+    return (
+      <div className="w-full space-y-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setMode("ai");
+            }}
+            className="text-xs font-bold text-[#6B7280] hover:text-[#202124] flex items-center gap-1.5 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Back to Solo / Same-Device</span>
+          </button>
+          <span className="text-[10px] uppercase font-bold tracking-wider text-[#F97316] bg-[#FFF7ED] px-2.5 py-0.5 rounded-full border border-[#FFEDD5]">
+            Online Dots & Boxes Duel
+          </span>
+        </div>
+        <MultiplayerLobby defaultGameType="dots-and-boxes" />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-xl mx-auto flex flex-col items-center gap-4 select-none">
       {/* Top Controls Bar */}
@@ -314,6 +339,16 @@ export function DotsAndBoxes({ activitySlug = "dots-and-boxes" }: Props) {
           >
             <Users className="w-3.5 h-3.5" />
             <span>2 Player</span>
+          </button>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setMode("online");
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#FFF7ED] text-[#F97316] hover:bg-[#FFEDD5] border border-[#FFEDD5] cursor-pointer"
+          >
+            <Wifi className="w-3.5 h-3.5" />
+            <span>2 Devices (Live)</span>
           </button>
         </div>
 
