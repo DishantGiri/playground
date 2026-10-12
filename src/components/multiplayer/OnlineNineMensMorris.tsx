@@ -220,13 +220,13 @@ export function OnlineNineMensMorris({ room, playerNumber, onAction, isSubmittin
               onClick={() => handleNodeClick(pos.id)}
               disabled={!isMyTurn || isSubmitting || isFinished}
               style={{ left: `${leftPercent}%`, top: `${topPercent}%` }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-all cursor-pointer ${
+              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors cursor-pointer ${
                 piece === 1
-                  ? "w-8 h-8 sm:w-9 sm:h-9 bg-cyan-400 border-2 border-white shadow-md flex items-center justify-center font-bold text-xs text-white"
+                  ? "w-8 h-8 sm:w-9 sm:h-9 bg-cyan-400 border-2 border-white shadow-md flex items-center justify-center font-bold text-xs text-white hover:brightness-110"
                   : piece === 2
-                  ? "w-8 h-8 sm:w-9 sm:h-9 bg-indigo-950 border-2 border-indigo-400 shadow-md flex items-center justify-center font-bold text-xs text-white"
-                  : "w-5 h-5 sm:w-6 sm:h-6 bg-slate-300 border-2 border-white hover:bg-emerald-400 hover:scale-125 shadow-xs"
-              } ${isSelected ? "ring-4 ring-amber-400 animate-pulse scale-110" : ""}`}
+                  ? "w-8 h-8 sm:w-9 sm:h-9 bg-indigo-950 border-2 border-indigo-400 shadow-md flex items-center justify-center font-bold text-xs text-white hover:brightness-125"
+                  : "w-5 h-5 sm:w-6 sm:h-6 bg-slate-300 border-2 border-white hover:bg-emerald-400 hover:ring-4 hover:ring-emerald-200/60 shadow-xs"
+              } ${isSelected ? "ring-4 ring-amber-400 animate-pulse" : ""}`}
             >
               {piece === 1 && "P1"}
               {piece === 2 && "P2"}

@@ -317,9 +317,11 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
   );
 
   // Player action: Click a point
+  // Player action: Click a point
   const handlePointClick = useCallback(
     (pos: number) => {
       if (gameOver || isAIThinking) return;
+      if (mode === "ai" && turn !== 1) return;
 
       const currentPhase = getPlayerPhase(turn);
       const opponent: Player = turn === 1 ? 2 : 1;
@@ -463,6 +465,7 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
       getPlayerPhase,
       isAIThinking,
       isPartOfMill,
+      mode,
       mustRemoveOpponent,
       selectedPoint,
       turn,
@@ -479,20 +482,33 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
     const timer = setTimeout(() => {
       // 1. If AI must remove an opponent piece
       if (mustRemoveOpponent) {
-        // Find removable pieces (prefer pieces not in mill, or any if all in mill)
         const allInMills = areAllPiecesInMills(1, board);
         const candidates = board
           .map((p, idx) => (p === 1 ? idx : null))
           .filter((idx): idx is number => idx !== null)
           .filter((pos) => allInMills || !isPartOfMill(pos, board));
 
-        const target =
-          candidates.length > 0
-            ? candidates[Math.floor(Math.random() * candidates.length)]
-            : 0;
+        if (candidates.length > 0) {
+          const target = candidates[Math.floor(Math.random() * candidates.length)];
+          const newBoard = [...board];
+          newBoard[target] = null;
+          setBoard(newBoard);
+          sound.playClick();
+          setMustRemoveOpponent(false);
 
-        setIsAIThinking(false);
-        handlePointClick(target);
+          if (checkVictory(newBoard, 1)) {
+            setIsAIThinking(false);
+            return;
+          }
+
+          setTurn(1);
+          setIsAIThinking(false);
+          setStatusMessage("Smart Bot captured one of your pieces! Your turn.");
+        } else {
+          setMustRemoveOpponent(false);
+          setTurn(1);
+          setIsAIThinking(false);
+        }
         return;
       }
 
@@ -504,8 +520,15 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
           .map((p, idx) => (p === null ? idx : null))
           .filter((idx): idx is number => idx !== null);
 
+        if (emptyPoints.length === 0) {
+          setIsAIThinking(false);
+          return;
+        }
+
         // Try to form mill or block opponent mill
         let bestPos = emptyPoints[0];
+
+        // 1. Try to complete AI mill
         for (const pos of emptyPoints) {
           const testBoard = [...board];
           testBoard[pos] = 2;
@@ -515,8 +538,35 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
           }
         }
 
+        // 2. If not forming own mill, try to block opponent mill
+        if (bestPos === emptyPoints[0]) {
+          for (const pos of emptyPoints) {
+            const testBoard = [...board];
+            testBoard[pos] = 1;
+            if (isPartOfMill(pos, testBoard)) {
+              bestPos = pos;
+              break;
+            }
+          }
+        }
+
+        const newBoard = [...board];
+        newBoard[bestPos] = 2;
+        setBoard(newBoard);
+        setUnplacedP2((prev) => prev - 1);
+        sound.playClick();
+
+        if (isPartOfMill(bestPos, newBoard)) {
+          setMustRemoveOpponent(true);
+          sound.playClick();
+          setStatusMessage("Smart Bot formed a MILL! 🏛️ Capturing your piece...");
+          setIsAIThinking(false);
+          return;
+        }
+
+        setTurn(1);
         setIsAIThinking(false);
-        handlePointClick(bestPos);
+        setStatusMessage("Smart Bot placed a piece. Your turn!");
         return;
       }
 
@@ -548,23 +598,46 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
         if (foundMove && isPartOfMill(foundMove.to, board)) break;
       }
 
-      setIsAIThinking(false);
       if (foundMove) {
-        // Select then move
-        handlePointClick(foundMove.from);
-        setTimeout(() => {
-          handlePointClick(foundMove!.to);
-        }, 150);
+        const newBoard = [...board];
+        newBoard[foundMove.from] = null;
+        newBoard[foundMove.to] = 2;
+        setBoard(newBoard);
+        sound.playClick();
+
+        if (isPartOfMill(foundMove.to, newBoard)) {
+          setMustRemoveOpponent(true);
+          sound.playClick();
+          setStatusMessage("Smart Bot formed a MILL! 🏛️ Capturing your piece...");
+          setIsAIThinking(false);
+          return;
+        }
+
+        if (checkVictory(newBoard, 1)) {
+          setIsAIThinking(false);
+          return;
+        }
+
+        setTurn(1);
+        setIsAIThinking(false);
+        setStatusMessage("Smart Bot moved. Your turn!");
+      } else {
+        // AI has no legal moves -> Player 1 wins
+        setWinner(1);
+        setGameOver(true);
+        confetti({ particleCount: 70, spread: 60 });
+        setStatusMessage("Player 1 Wins! Smart Bot has no legal moves.");
+        setIsAIThinking(false);
       }
-    }, 450);
+    }, 550);
 
     return () => clearTimeout(timer);
   }, [
     areAllPiecesInMills,
     board,
+    checkVictory,
     gameOver,
     getPlayerPhase,
-    handlePointClick,
     isPartOfMill,
     mode,
     mustRemoveOpponent,
@@ -798,32 +871,41 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
                 return (
                   <g
                     key={`point-${pt.id}`}
-                    className="cursor-pointer"
+                    className="cursor-pointer group"
                     onClick={() => handlePointClick(pt.id)}
                   >
-                    {/* Empty point base */}
+                    {/* Generous stable invisible hitbox (48px diameter) to eliminate hover boundary flickering */}
                     <circle
                       cx={pt.x}
                       cy={pt.y}
-                      r="7"
-                      fill="#E8E8E5"
-                      stroke="#202124"
-                      strokeWidth="2"
-                      className="transition-transform hover:scale-125"
+                      r="24"
+                      fill="transparent"
                     />
 
-                    {/* Candidate highlight if removing opponent */}
+                    {/* Empty point base (when unoccupied) */}
+                    {piece === null && (
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="8"
+                        fill="#E8E8E5"
+                        stroke="#202124"
+                        strokeWidth="2.5"
+                        className="transition-colors group-hover:fill-indigo-200 group-hover:stroke-indigo-600"
+                      />
+                    )}
+
+                    {/* Candidate highlight if removing opponent piece */}
                     {isRemovableCandidate && (
                       <circle
                         cx={pt.x}
                         cy={pt.y}
-                        r="19"
+                        r="21"
                         fill="none"
                         stroke="#DC2626"
-                        strokeWidth="2.5"
-                        strokeDasharray="4 3"
-                        className="animate-spin origin-center"
-                        style={{ transformOrigin: `${pt.x}px ${pt.y}px` }}
+                        strokeWidth="3"
+                        strokeDasharray="6 3"
+                        className="animate-pulse"
                       />
                     )}
 
@@ -832,10 +914,10 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
                       <circle
                         cx={pt.x}
                         cy={pt.y}
-                        r="19"
+                        r="21"
                         fill="none"
                         stroke="#6366F1"
-                        strokeWidth="3"
+                        strokeWidth="3.5"
                         className="animate-pulse"
                       />
                     )}
@@ -845,21 +927,23 @@ export function NineMensMorris({ activitySlug = "nine-mens-morris" }: Props) {
                       <circle
                         cx={pt.x}
                         cy={pt.y}
-                        r="14"
+                        r="15"
                         fill={piece === 1 ? "#6366F1" : "#F97316"}
                         stroke="#FFFFFF"
-                        strokeWidth="2.5"
-                        className="transition-all hover:scale-110 drop-shadow-sm"
+                        strokeWidth="3"
+                        className="transition-colors group-hover:brightness-110 filter drop-shadow-sm"
                       />
                     )}
 
-                    {/* Golden Crown badge if part of active mill */}
+                    {/* Golden Center badge if part of active mill */}
                     {inMill && piece !== null && (
                       <circle
                         cx={pt.x}
                         cy={pt.y}
-                        r="4"
+                        r="5"
                         fill="#FDE047"
+                        stroke="#854D0E"
+                        strokeWidth="1"
                         className="pointer-events-none"
                       />
                     )}
