@@ -31,23 +31,23 @@ export function OnlineDotsAndBoxes({ room, playerNumber, onAction, isSubmitting 
   const p2Score = state?.p2Score || 0;
   const openBoxes = Math.max(0, totalBoxes - (p1Score + p2Score));
 
-  // Dynamic board dimensions based on gridSize
+  // Dynamic board dimensions based on gridSize (optimized for expanded arena width)
   const cellSize =
-    gridSize <= 4 ? 68 :
-    gridSize <= 5 ? 56 :
-    gridSize <= 6 ? 48 :
-    gridSize <= 7 ? 42 :
-    gridSize <= 9 ? 36 : 30;
+    gridSize <= 4 ? 76 :
+    gridSize <= 5 ? 64 :
+    gridSize <= 6 ? 54 :
+    gridSize <= 7 ? 48 :
+    gridSize <= 9 ? 40 : 35;
 
   const dotSize =
-    gridSize <= 5 ? 14 :
-    gridSize <= 7 ? 12 :
-    gridSize <= 9 ? 10 : 8;
+    gridSize <= 5 ? 15 :
+    gridSize <= 7 ? 13 :
+    gridSize <= 9 ? 11 : 9;
 
   const edgeThickness =
-    gridSize <= 5 ? 7 :
-    gridSize <= 7 ? 5 :
-    gridSize <= 9 ? 4 : 3;
+    gridSize <= 5 ? 8 :
+    gridSize <= 7 ? 6 :
+    gridSize <= 9 ? 5 : 4;
 
   const offset = 16;
   const boardWidth = (gridSize - 1) * cellSize + offset * 2;

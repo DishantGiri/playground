@@ -510,11 +510,11 @@ export function MultiplayerLobby({
           onRematch={() => handleGameAction("rematch")}
         />
 
-        {/* 2. MAIN ARENA: 3-COLUMN WIREFRAME LAYOUT */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        {/* 2. MAIN ARENA: EXPANDED GAME BOARD + COMPACT DETAILS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
           
-          {/* COLUMN 1: [game] (lg:col-span-6) */}
-          <div className="lg:col-span-6 space-y-4">
+          {/* COLUMN 1: [game arena] (lg:col-span-8 xl:col-span-9 - Much more width for game boards!) */}
+          <div className="lg:col-span-8 xl:col-span-9 space-y-4 min-w-0">
             {activeRoom.gameType === "dots-and-boxes" && (
               <OnlineDotsAndBoxes
                 room={activeRoom}
@@ -579,8 +579,8 @@ export function MultiplayerLobby({
             )}
           </div>
 
-          {/* COLUMN 2: [game details] (lg:col-span-3) */}
-          <div className="lg:col-span-3 bg-white border border-[#E8E8E5] rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
+          {/* COLUMN 2: [game details & controls] (lg:col-span-4 xl:col-span-3) */}
+          <div className="lg:col-span-4 xl:col-span-3 bg-white border border-[#E8E8E5] rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-[#E8E8E5]">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">
                 Match Details
@@ -679,22 +679,21 @@ export function MultiplayerLobby({
             </div>
           </div>
 
-          {/* COLUMN 3: [chat] (lg:col-span-3) */}
-          <div className="lg:col-span-3">
-            <TemporaryGameChat
-              messages={activeRoom.messages}
-              playerNumber={playerNumber}
-              playerName={myName}
-              opponentName={opponentName}
-              onSendMessage={(text) => handleGameAction("send_chat", { text })}
-              defaultOpen={true}
-            />
-          </div>
+        </div>
+
+        {/* FLOATING POPUP LIVE CHAT (Bottom-Right, zero board obstruction) */}
+        <TemporaryGameChat
+          messages={activeRoom.messages}
+          playerNumber={playerNumber}
+          playerName={myName}
+          opponentName={opponentName}
+          onSendMessage={(text) => handleGameAction("send_chat", { text })}
+          defaultOpen={false}
+        />
 
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   // Otherwise, render Full Unified Game Lobby
   const GameIcon = activeGameMeta.icon;
