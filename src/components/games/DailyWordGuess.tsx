@@ -14,28 +14,15 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { sound } from "@/lib/audio";
+import {
+  isValidWord,
+  getDailyTargetWord,
+  getRandomTargetWord,
+} from "@/lib/wordGameDictionary";
 
 interface Props {
   activitySlug?: string;
 }
-
-// Curated 5-letter Target Words Pool
-const WORDS = [
-  "REACT", "GAMES", "PIXEL", "SWORD", "CLOUD", "BRAIN", "LOGIC", "POWER",
-  "SPEED", "FLASH", "CHESS", "BLOCK", "STARS", "NIGHT", "DREAM", "FLAME",
-  "WATER", "EARTH", "MAGIC", "GHOST", "TIGER", "EAGLE", "ROBOT", "SPACE",
-  "SHINE", "TRACK", "POINT", "SCORE", "QUEST", "LEVEL", "CANDY", "FRUIT",
-  "BEACH", "MONEY", "HOUSE", "LIGHT", "MUSIC", "SOUND", "COLOR", "RIVER",
-  "OCEAN", "CLOCK", "TRAIN", "PLANE", "STORM", "HAPPY", "SMILE", "PEACE",
-];
-
-const VALID_GUESSES = new Set([
-  ...WORDS,
-  "ABOUT", "OTHER", "WHICH", "THEIR", "THERE", "FIRST", "WOULD", "THESE",
-  "CLICK", "BRICK", "TRICK", "STACK", "SHOCK", "BLACK", "WHITE", "GREEN",
-  "CLEAR", "CLEAN", "DRIVE", "FORCE", "BOARD", "CHAIR", "TABLE", "PHONE",
-  "SMART", "BRAVE", "SWEET", "BREAD", "APPLE", "DRINK", "FLOOR", "PAPER",
-]);
 
 type LetterStatus = "correct" | "present" | "absent" | "empty";
 
@@ -54,22 +41,12 @@ export function DailyWordGuess({ activitySlug = "daily-word-guess" }: Props) {
   const MAX_ATTEMPTS = 6;
   const WORD_LENGTH = 5;
 
-  // Pick deterministic daily word based on date
-  const getDailyWord = useCallback(() => {
-    const today = new Date();
-    const daySeed =
-      today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    return WORDS[daySeed % WORDS.length];
-  }, []);
-
   // Initialize word
   const initGame = useCallback(
     (daily = isDaily) => {
       sound.playClick();
       setIsDaily(daily);
-      const chosen = daily
-        ? getDailyWord()
-        : WORDS[Math.floor(Math.random() * WORDS.length)];
+      const chosen = daily ? getDailyTargetWord() : getRandomTargetWord();
       setTargetWord(chosen);
       setGuesses([]);
       setCurrentInput("");
@@ -77,7 +54,7 @@ export function DailyWordGuess({ activitySlug = "daily-word-guess" }: Props) {
       setIsWin(false);
       setCopied(false);
     },
-    [getDailyWord, isDaily]
+    [isDaily]
   );
 
   useEffect(() => {
@@ -163,7 +140,7 @@ export function DailyWordGuess({ activitySlug = "daily-word-guess" }: Props) {
       return;
     }
 
-    if (!VALID_GUESSES.has(currentInput) && !WORDS.includes(currentInput)) {
+    if (!isValidWord(currentInput) && currentInput !== targetWord) {
       setShakeRow(guesses.length);
       setTimeout(() => setShakeRow(null), 500);
       showToast("Not in word list");
