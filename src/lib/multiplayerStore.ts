@@ -10,6 +10,16 @@ export type MultiplayerGameType =
   | "reaction-duel"
   | "number-guess";
 
+export const GAME_TITLES: Record<MultiplayerGameType, string> = {
+  "dots-and-boxes": "Dots & Boxes Duel",
+  "nine-mens-morris": "Nine Men's Morris",
+  "connect-4": "Connect 4 Duel",
+  "memory-duel": "Memory Card Duel",
+  "tic-tac-toe": "Tic-Tac-Toe Blitz",
+  "reaction-duel": "Reflex Tap Duel",
+  "number-guess": "Number Guess Duel",
+};
+
 export interface Player {
   id: string; // unique token for the player
   name: string;
@@ -390,6 +400,16 @@ export function generateMemoryCards(pairCount = 12, gridSize = "4x6"): MemoryCar
     deck.push({ id: idCounter++, iconKey: c.key, image: c.image, matched: false });
     deck.push({ id: idCounter++, iconKey: c.key, image: c.image, matched: false });
   });
+
+  // Supplement if more pairs needed
+  if (deck.length < pairCount * 2) {
+    const remainingNeeded = pairCount - Math.floor(deck.length / 2);
+    const chosenEmojis = [...RICH_MEMORY_ITEMS].sort(() => Math.random() - 0.5).slice(0, remainingNeeded);
+    chosenEmojis.forEach((emoji, idx) => {
+      deck.push({ id: idCounter++, iconKey: `item-${idx}`, image: emoji, matched: false });
+      deck.push({ id: idCounter++, iconKey: `item-${idx}`, image: emoji, matched: false });
+    });
+  }
 
   // Fisher-Yates shuffle
   for (let i = deck.length - 1; i > 0; i--) {

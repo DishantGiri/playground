@@ -192,3 +192,34 @@ test("Multiplayer: Temporary in-game chat messages are ephemeral and stay in ses
   assert.equal(res.room?.messages.length, 0);
 });
 
+test("Multiplayer: Memory Duel grid sizing, pair counts, and card matching", () => {
+  // Test 4x6 (default full game)
+  const { room: room4x6 } = createRoom("memory-duel", "HostM1", "MEM4X6", {
+    memoryGridSize: "4x6",
+  });
+  assert.equal(room4x6.memoryDuel?.cards.length, 24);
+  assert.equal(room4x6.memoryDuel?.totalPairs, 12);
+  assert.equal(room4x6.memoryDuel?.cols, 6);
+
+  // Test 4x4 (quick game)
+  const { room: room4x4, playerToken: mHostToken } = createRoom(
+    "memory-duel",
+    "HostM2",
+    "MEM4X4",
+    { memoryGridSize: "4x4" }
+  );
+  assert.equal(room4x4.memoryDuel?.cards.length, 16);
+  assert.equal(room4x4.memoryDuel?.totalPairs, 8);
+  assert.equal(room4x4.memoryDuel?.cols, 4);
+
+  // Join and test flipping cards
+  const guestRes = joinRoom("MEM4X4", "GuestM2");
+  assert.equal(guestRes.success, true);
+
+  // Flip first card as Host (Player 1)
+  let flipRes = handleRoomAction("MEM4X4", mHostToken, "flip_card", { index: 0 });
+  assert.equal(flipRes.success, true);
+  assert.deepEqual(flipRes.room?.memoryDuel?.flippedIndices, [0]);
+});
+
+

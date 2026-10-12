@@ -123,6 +123,8 @@ export function OnlineMemoryDuel({
 
   const cards = state?.cards || [];
   const matchedCount = state ? state.p1Score + state.p2Score : 0;
+  const cols = state?.cols || (cards.length === 24 ? 6 : 4);
+  const totalPairs = state?.totalPairs || (cards.length > 0 ? Math.floor(cards.length / 2) : 12);
 
   return (
     <div className="rounded-2xl sm:rounded-3xl border border-[#E8E8E5] bg-white p-4 sm:p-5 shadow-xs flex flex-col items-center justify-center min-h-[440px] space-y-4">
@@ -138,7 +140,9 @@ export function OnlineMemoryDuel({
       <div className="w-full flex items-center justify-between gap-2 pb-2 border-b border-[#E8E8E5]">
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#F0F0ED] border border-[#E8E8E5] text-xs font-bold text-[#202124]">
           <CheckCircle2 className="w-3.5 h-3.5 text-[#16A34A]" />
-          <span>{matchedCount} / 12 Pairs Found</span>
+          <span>
+            {matchedCount} / {totalPairs} Pairs Found
+          </span>
         </div>
 
         <span
@@ -164,8 +168,16 @@ export function OnlineMemoryDuel({
         </span>
       </div>
 
-      {/* 4x6 Gaming Arena Board */}
-      <div className="grid grid-cols-6 gap-1.5 sm:gap-2.5 md:gap-3 w-full max-w-[560px]">
+      {/* Dynamic Gaming Arena Board */}
+      <div
+        className={`grid gap-1.5 sm:gap-2.5 md:gap-3 w-full mx-auto ${
+          cols === 6
+            ? "grid-cols-6 max-w-[560px]"
+            : cols === 3
+            ? "grid-cols-3 max-w-[340px]"
+            : "grid-cols-4 max-w-[440px]"
+        }`}
+      >
         {cards.map((card, idx) => {
           const isFlipped = localFlipped.includes(idx);
           const isMatched = card.matched;
@@ -177,7 +189,9 @@ export function OnlineMemoryDuel({
               key={card.id}
               onClick={() => handleCardClick(idx)}
               disabled={!isClickable}
-              className="aspect-[3/4] w-full select-none relative focus:outline-hidden cursor-pointer"
+              className={`aspect-[3/4] w-full select-none relative focus:outline-hidden ${
+                isClickable ? "cursor-pointer" : isMatched ? "cursor-default" : "cursor-not-allowed"
+              }`}
               style={{ perspective: "1000px" }}
             >
               {/* 3D Card Flip Wrapper */}
@@ -185,20 +199,28 @@ export function OnlineMemoryDuel({
                 className="w-full h-full relative transition-transform duration-350 ease-out"
                 style={{
                   transformStyle: "preserve-3d",
-                  transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                  transform: isFlipped || isMatched ? "rotateY(180deg)" : "rotateY(0deg)",
                 }}
               >
                 {/* Back of Card (Face Down) */}
                 <div
-                  className={`absolute inset-0 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center p-1 transition-all ${
+                  className={`absolute inset-0 w-full h-full rounded-xl sm:rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col items-center justify-center p-1 ${
                     isClickable
-                      ? "bg-gradient-to-br from-[#6366F1] to-[#4338CA] border-[#4F46E5] text-white hover:scale-102 shadow-2xs hover:shadow-xs active:scale-95"
-                      : "bg-[#F0F0ED] border-[#E8E8E5] text-[#9CA3AF] cursor-default opacity-85"
+                      ? "border-[#6366F1]/40 bg-gradient-to-br from-[#6366F1] via-[#5457E5] to-[#4338CA] hover:border-[#F97316] hover:scale-[1.03] shadow-xs active:scale-95"
+                      : "border-[#6366F1]/30 bg-gradient-to-br from-[#6366F1] via-[#5457E5] to-[#4338CA] shadow-2xs opacity-90"
                   }`}
-                  style={{ backfaceVisibility: "hidden" }}
+                  style={{
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                  }}
                 >
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-white/10 flex items-center justify-center">
-                    <span className="text-[10px] sm:text-xs font-black text-white/80">?</span>
+                  <div className="w-full h-full rounded-lg sm:rounded-xl border border-white/20 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.18)_0%,transparent_75%)] relative flex flex-col items-center justify-center p-1">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border border-white/30 bg-white/15 flex items-center justify-center shadow-inner">
+                      <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#F97316] fill-[#F97316]" />
+                    </div>
+                    <span className="text-[6px] sm:text-[7px] font-black tracking-widest uppercase text-white/95 mt-0.5">
+                      CARD
+                    </span>
                   </div>
                 </div>
 
@@ -209,31 +231,38 @@ export function OnlineMemoryDuel({
                       ? card.matchedBy === 1
                         ? "border-[#F97316] ring-2 ring-[#FFEDD5] bg-[#FFF7ED]"
                         : "border-[#6366F1] ring-2 ring-[#EEF2FF] bg-[#EEF2FF]"
-                      : "border-[#E8E8E5]"
+                      : "border-[#6366F1]"
                   }`}
                   style={{
                     backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
                     transform: "rotateY(180deg)",
                   }}
                 >
-                  <div className="w-full flex justify-end px-1 pt-0.5">
-                    <span className="text-[7px] font-bold text-[#9CA3AF]">#{card.id + 1}</span>
+                  <div className="w-full flex justify-between items-center px-1 pt-0.5">
+                    <span className="text-[7px] font-bold text-[#9CA3AF]">#{card.id}</span>
+                    {isMatched && (
+                      <span
+                        className={`px-1 py-0.2 rounded-full text-white font-black text-[7px] flex items-center gap-0.5 ${
+                          card.matchedBy === 1 ? "bg-[#F97316]" : "bg-[#6366F1]"
+                        }`}
+                      >
+                        P{card.matchedBy}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex-1 flex flex-col items-center justify-center relative">
-                    <span className="text-xl sm:text-2xl drop-shadow-xs">{card.image}</span>
-
-                    {isMatched && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[1px] rounded-lg">
-                        <span
-                          className={`px-1 py-0.2 rounded-full text-white font-black text-[7px] shadow-2xs flex items-center gap-0.5 ${
-                            card.matchedBy === 1 ? "bg-[#F97316]" : "bg-[#6366F1]"
-                          }`}
-                        >
-                          <CheckCircle2 className="w-2.5 h-2.5" />
-                          <span>P{card.matchedBy}</span>
-                        </span>
-                      </div>
+                  <div className="flex-1 w-full flex items-center justify-center relative p-1 overflow-hidden">
+                    {card.image && (card.image.startsWith("/") || card.image.startsWith("http")) ? (
+                      <img
+                        src={card.image}
+                        alt={card.iconKey}
+                        className={`w-full h-full object-contain pointer-events-none select-none transition-transform duration-300 ${
+                          isMatched ? "scale-90 opacity-95" : "scale-100"
+                        }`}
+                      />
+                    ) : (
+                      <span className="text-xl sm:text-2xl drop-shadow-xs">{card.image || card.iconKey}</span>
                     )}
                   </div>
 

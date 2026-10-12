@@ -42,6 +42,7 @@ import {
   MultiplayerGameType,
   MultiplayerRoom,
   CustomRoomOptions,
+  GAME_TITLES,
 } from "@/lib/multiplayerStore";
 import { MultiplayerHeader } from "./MultiplayerHeader";
 import { TemporaryGameChat } from "./TemporaryGameChat";
@@ -169,7 +170,7 @@ export function MultiplayerLobby({
   const [isPublicRoom, setIsPublicRoom] = useState(true);
   const [turnTimerSeconds, setTurnTimerSeconds] = useState<number>(0);
   const [dotsGridSize, setDotsGridSize] = useState<number>(3);
-  const [memoryGridSize, setMemoryGridSize] = useState<string>("4x4");
+  const [memoryGridSize, setMemoryGridSize] = useState<string>("4x6");
   const [morrisFlyAllowed, setMorrisFlyAllowed] = useState(true);
   const [reactionTargetScore, setReactionTargetScore] = useState(3);
   const [numberGuessMaxAttempts, setNumberGuessMaxAttempts] = useState(5);
@@ -647,7 +648,7 @@ export function MultiplayerLobby({
               </div>
               <div className="flex items-center justify-between text-[11px] text-[#6B7280]">
                 <span>Game</span>
-                <span className="font-bold text-[#202124] capitalize">{activeRoom.gameType.replace(/-/g, " ")}</span>
+                <span className="font-bold text-[#202124]">{GAME_TITLES[activeRoom.gameType] || activeRoom.gameType.replace(/-/g, " ")}</span>
               </div>
               <div className="flex items-center justify-between text-[11px] text-[#6B7280]">
                 <span>Connection</span>
@@ -1128,6 +1129,32 @@ export function MultiplayerLobby({
                                 onClick={() => setDotsGridSize(g.val)}
                                 className={`py-1.5 px-2 rounded-lg border text-[11px] font-bold cursor-pointer ${
                                   dotsGridSize === g.val
+                                    ? "bg-[#F97316] text-white border-[#EA580C]"
+                                    : "bg-[#F7F7F5] border-[#E8E8E5] text-[#6B7280]"
+                                }`}
+                              >
+                                {g.label}
+                              </button>
+                            ))}
+                          </div>
+                      {/* Memory Duel modifier */}
+                      {selectedGame === "memory-duel" && (
+                        <div>
+                          <label className="block text-[11px] font-bold text-[#6B7280] mb-1.5 uppercase tracking-wider">
+                            Memory Grid Size
+                          </label>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {[
+                              { val: "4x6", label: "4x6 (12 Pairs)" },
+                              { val: "4x4", label: "4x4 (8 Pairs)" },
+                              { val: "3x4", label: "3x4 (6 Pairs)" },
+                            ].map((g) => (
+                              <button
+                                key={g.val}
+                                type="button"
+                                onClick={() => setMemoryGridSize(g.val)}
+                                className={`py-1.5 px-2 rounded-lg border text-[11px] font-bold cursor-pointer ${
+                                  memoryGridSize === g.val
                                     ? "bg-[#F97316] text-white border-[#EA580C]"
                                     : "bg-[#F7F7F5] border-[#E8E8E5] text-[#6B7280]"
                                 }`}

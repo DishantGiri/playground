@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Copy, Check, Share2, LogOut, Swords, Wifi, User, Trophy, RotateCcw } from "lucide-react";
-import { MultiplayerRoom } from "@/lib/multiplayerStore";
+import { MultiplayerRoom, GAME_TITLES } from "@/lib/multiplayerStore";
 import { sound } from "@/lib/audio";
 
 interface Props {
@@ -45,8 +45,8 @@ export function MultiplayerHeader({ room, playerNumber, playerToken, onLeave, on
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm sm:text-base font-black text-[#202124] capitalize">
-                {room.gameType.replace(/-/g, " ")} Duel
+              <h2 className="text-sm sm:text-base font-black text-[#202124]">
+                {GAME_TITLES[room.gameType] || room.gameType.replace(/-/g, " ")}
               </h2>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#6366F1] bg-[#EEF2FF] px-2 py-0.5 rounded-lg border border-[#C7D2FE]">
                 Online Live
