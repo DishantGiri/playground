@@ -10,7 +10,7 @@ const adapter = new PrismaMariaDb({
   connectionLimit: 10,
 });
 
-const globalForPrisma = globalThis as unknown as {
+const globalForPrisma = globalThis as unknown as {  
   prisma: PrismaClient | undefined;
 };
 

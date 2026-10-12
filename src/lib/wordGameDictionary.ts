@@ -1,19 +1,12 @@
 import englishWords from "an-array-of-english-words";
-import { generate, count, wordList } from "random-words";
+import { generate } from "random-words";
 
 // Extract 5-letter words set for validation
 const FIVE_LETTER_WORDS_SET = new Set<string>(
   englishWords
-    .filter((w) => w.length === 5)
-    .map((w) => w.toUpperCase())
+    .filter((w: string) => w.length === 5)
+    .map((w: string) => w.toUpperCase())
 );
-
-// Add any random-words 5-letter words
-wordList.forEach((w) => {
-  if (w.length === 5) {
-    FIVE_LETTER_WORDS_SET.add(w.toUpperCase());
-  }
-});
 
 // Curated backup targets in case generation produces anything unexpected
 const FALLBACK_TARGETS = [
